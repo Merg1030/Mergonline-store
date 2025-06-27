@@ -602,7 +602,7 @@
 
     window.showReceipt = function(orderId) {
       const order = allUserOrders.find(o => o.id === orderId);
-      if(!order) return alert("Order not found!");
+      if (!order) return alert("Order not found!");
 
       let itemsHtml = (order.items && Array.isArray(order.items)) ? order.items.map(item => `
         <tr>
@@ -627,6 +627,7 @@
       else if (paidThrough === "FNB") paymentRow = `<td><b>FNB Ref:</b></td><td>${fnbRef}</td>`;
       else paymentRow = `<td colspan="2"></td>`;
 
+      // --- PRINT RECEIPT HTML ---
       const receiptHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -634,24 +635,130 @@
         <meta charset="UTF-8">
         <title>Receipt - mergsignature</title>
         <style>
-          @page { size: A4; margin: 20mm; }
-          body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; margin: 0; padding: 0;}
-          .a4-container { width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff; padding: 32px 24px; box-sizing: border-box; }
-          .brand { text-align: center; font-weight: bold; font-size: 2.2rem; color: #2e6aaf; letter-spacing: 2.5px; margin-bottom: 6px; margin-top: 10px; }
-          .contact { text-align: center; margin-bottom: 26px; color: #18406a; font-size: 1.08rem; line-height: 1.7; }
+          html, body {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0;
+            padding: 0;
+            background: #fff !important;
+            box-sizing: border-box;
+            overflow-x: hidden;
+          }
+          @page {
+            size: A4 portrait;
+            margin: 12mm 10mm 12mm 10mm;
+          }
+          body, .a4-container {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            box-sizing: border-box;
+          }
+          .a4-container {
+            min-height: 100%;
+            max-width: 190mm;
+            margin: 0 auto;
+            padding: 0;
+            background: #fff;
+          }
+          .brand {
+            text-align: center;
+            font-weight: bold;
+            font-size: 2.1rem;
+            color: #2e6aaf;
+            letter-spacing: 2.5px;
+            margin-bottom: 7px;
+            margin-top: 10px;
+          }
+          .contact {
+            text-align: center;
+            margin-bottom: 22px;
+            color: #18406a;
+            font-size: 1.08rem;
+            line-height: 1.7;
+          }
           .contact span { display: inline-block; margin: 0 10px; }
-          h2 { text-align: center; margin: 0 0 24px 0; color: #222; letter-spacing: 1.5px; font-size: 2rem; }
-          .receipt-details { width: 100%; margin-bottom: 24px; font-size: 1.07rem; }
-          .receipt-details td { padding: 6px 0; color: #333; }
-          .items { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-          .items th, .items td { border: 1px solid #e0e0e0; padding: 10px 8px; text-align: left; }
-          .items th { background: #f0f4f8; color: #2e6aaf; }
-          .total-label { text-align: right; font-size: 1.13rem; padding-right: 8px; font-weight: bold; }
-          .total-value { font-size: 1.13rem; font-weight: bold; color: #18406a; padding-left: 8px; }
-          .footer { margin-top: 40px; text-align: center; font-size: 1rem; color: #888; }
-          .print-btn { display: inline-block; margin: 30px auto 0 auto; padding: 14px 44px; background: #2e6aaf; color: #fff; border: none; border-radius: 6px; font-size: 1.10rem; cursor: pointer; transition: background .2s; box-shadow: 0 2px 8px rgba(46,106,175,0.06);}
+          h2 {
+            text-align: center;
+            margin: 0 0 20px 0;
+            color: #222;
+            letter-spacing: 1.5px;
+            font-size: 1.6rem;
+          }
+          .receipt-details {
+            width: 100%;
+            margin-bottom: 18px;
+            font-size: 1.03rem;
+            border-collapse: collapse;
+          }
+          .receipt-details td {
+            padding: 5px 2px 5px 0;
+            color: #333;
+            vertical-align: top;
+            border: none;
+          }
+          .items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+            font-size: 1.02rem;
+          }
+          .items th, .items td {
+            border: 1px solid #e0e0e0;
+            padding: 8px 6px;
+            text-align: left;
+          }
+          .items th {
+            background: #f0f4f8;
+            color: #2e6aaf;
+          }
+          .total-label {
+            text-align: right;
+            font-size: 1.09rem;
+            padding-right: 8px;
+            font-weight: bold;
+          }
+          .total-value {
+            font-size: 1.09rem;
+            font-weight: bold;
+            color: #18406a;
+            padding-left: 8px;
+          }
+          .footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 0.98rem;
+            color: #888;
+          }
+          .print-btn {
+            display: inline-block;
+            margin: 30px auto 0 auto;
+            padding: 14px 44px;
+            background: #2e6aaf;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.10rem;
+            cursor: pointer;
+            transition: background .2s;
+            box-shadow: 0 2px 8px rgba(46,106,175,0.06);
+          }
           .print-btn:hover { background: #18406a; }
-          @media print { .print-btn, .footer { display: none !important; } body { background: #fff; } .a4-container { box-shadow: none; margin: 0; padding: 0; } }
+          @media print {
+            html, body, .a4-container {
+              width: 100% !important;
+              min-width: 0;
+              max-width: 100%;
+              margin: 0 !important;
+              padding: 0 !important;
+              box-shadow: none !important;
+              background: #fff !important;
+              overflow: visible !important;
+            }
+            .print-btn, .footer { display: none !important; }
+            body { background: #fff !important; }
+          }
         </style>
       </head>
       <body>
@@ -709,7 +816,7 @@
           </div>
         </div>
       `;
-      const w = window.open("", "_blank", "width=800,height=1000");
+      const w = window.open("", "_blank", "width=900,height=1200");
       w.document.write(receiptHtml);
       w.document.close();
     };
