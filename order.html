@@ -421,13 +421,23 @@
       return d.toISOString().slice(0,10);
     }
 
+    // Helper: Format date as "DD.MM.YYYY"
+    function toNiceDate(str) {
+      if (!str) return "";
+      const d = new Date(str);
+      if (isNaN(d.getTime())) return "";
+      const dd = String(d.getDate()).padStart(2,'0');
+      const mm = String(d.getMonth()+1).padStart(2,'0');
+      const yyyy = d.getFullYear();
+      return `${dd}.${mm}.${yyyy}`;
+    }
+
     function renderOrders() {
       let orders = allUserOrders.slice();
       const selectedDate = dateFilter.value;
       if(selectedDate) {
         orders = orders.filter(order => {
           if(!order.date) return false;
-          // Use helper to match date regardless of format
           return toISODate(order.date) === selectedDate;
         });
       }
@@ -469,7 +479,7 @@
               <span class="order-id">Order #${order.id.slice(0,8).toUpperCase()}</span>
               <span class="order-status ${statusClass}">${statusText}</span>
             </div>
-            <div class="order-date">${order.date ? order.date : ""}</div>
+            <div class="order-date">${order.date ? toNiceDate(order.date) : ""}</div>
             <ul class="order-items">
               ${order.items.map(item => `<li>${item.name} (x${item.qty}) - ZMW ${(item.price*item.qty).toFixed(2)}</li>`).join('')}
             </ul>
@@ -478,8 +488,8 @@
               <span class="order-location-label">Delivery:</span>
               ${order.deliveryLocation ? order.deliveryLocation : '<span style="color:#e74c3c;">Not Provided</span>'}
             </div>
-            ${proofHtml}
             <button class="order-receipt-btn" onclick="window.showReceipt('${order.id}')">View Receipt</button>
+            ${proofHtml}
             ${renderStatusNote(order)}
             ${reviewSection}
           </li>
@@ -574,6 +584,13 @@
       const customerName = order.customerName || order.name || "Customer";
       const customerEmail = order.customerEmail || order.email || "";
 
+      // TID and delivery address
+      const tid = order.tid || order.paymentId || order.transactionId || "";
+      const deliveryAddress = order.deliveryLocation || order.address || "";
+
+      // Format date as DD.MM.YYYY
+      const onlyDate = order.date ? toNiceDate(order.date) : "";
+
       // Receipt markup
       const receiptHtml = `
       <!DOCTYPE html>
@@ -617,13 +634,19 @@
               <td><b>Receipt #:</b></td>
               <td>${order.id.slice(0,10).toUpperCase()}</td>
               <td><b>Date:</b></td>
-              <td>${order.date ? order.date : ""}</td>
+              <td>${onlyDate}</td>
             </tr>
             <tr>
               <td><b>Billed To:</b></td>
               <td>${customerName}</td>
               <td><b>Email:</b></td>
               <td>${customerEmail}</td>
+            </tr>
+            <tr>
+              <td><b>TID:</b></td>
+              <td>${tid}</td>
+              <td><b>Delivery Address:</b></td>
+              <td>${deliveryAddress}</td>
             </tr>
           </table>
           <table class="items">
@@ -654,7 +677,7 @@
       w.document.close();
     };
 
-    // Inactivity timeout
+    // Inactivity timeout, security, etc.
     let inactivityTimeout;
     function resetInactivityTimeout() {
         clearTimeout(inactivityTimeout);
@@ -663,19 +686,16 @@
         }, 600000); // 10 minutes
     }
 
-    // Set up inactivity timer
     resetInactivityTimeout();
     document.addEventListener('mousemove', resetInactivityTimeout);
     document.addEventListener('keypress', resetInactivityTimeout);
     document.addEventListener('click', resetInactivityTimeout);
     document.addEventListener('touchstart', resetInactivityTimeout);
 
-    // Disable right-click context menu
     document.addEventListener('contextmenu', function(e) {
         e.preventDefault();
     });
 
-    // Disable specific keyboard shortcuts
     document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'a' || e.key === 'c')) || e.key === 'F12') {
             e.preventDefault();
