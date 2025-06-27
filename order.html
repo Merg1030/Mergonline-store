@@ -5,316 +5,331 @@
   <title>Your Orders - MergSignature Jewelry</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <style>
-   body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #c9d6e5; /* index/chat background */
-  color: #222;
-  margin: 0;
-  font-size:13px;
-}
-.container {
-  max-width: 100vw;
-  margin: 0 auto;
-  background: #f7f9fa; /* match index/chat main bg */
-  border-radius: 8px;
-  box-shadow: 0 2px 10px #3574e71a;
-  padding: 0.3rem 0.1rem 0.7rem 0.1rem;
-}
-h2 {
-  font-size: 1.08em;
-  margin: 0.25em 0 0.9em 0;
-  text-align: center;
-  color: #3574e7; /* index blue */
-  letter-spacing: 1px;
-  font-weight: bold;
-  text-shadow: 0 2px 6px #3574e71a;
-}
-.filter-bar {
-  margin: 0 0 1em 0;
-  display: flex;
-  align-items: center;
-  gap: 0.45em;
-  flex-wrap: wrap;
-  justify-content: center;
-  background: #e2e6ef;
-  border-radius: 8px;
-  padding: 0.42em 0.5em 0.42em 0.5em;
-  box-shadow: 0 1px 2px #3574e711;
-}
-.filter-bar label {
-  font-weight: 600;
-  color: #3574e7;
-  font-size: .96em;
-  letter-spacing: 0.5px;
-}
-.filter-bar input[type="date"] {
-  padding: 0.11em 0.42em;
-  border-radius: 4px;
-  border: 1px solid #b2d4f7;
-  font-size: .97em;
-  background: #fff;
-  color: #1d2636;
-  outline: none;
-  transition: border 0.15s;
-}
-.filter-bar input[type="date"]:focus {
-  border: 1.5px solid #3574e7;
-}
-#clearDateFilter {
-  padding:0.15em 0.7em;
-  border-radius:4px;
-  border:1px solid #3574e7;
-  background: #fff;
-  color:#3574e7;
-  font-weight:600;
-  cursor:pointer;
-  font-size:.97em;
-  transition: background 0.18s, color 0.18s;
-}
-#clearDateFilter:hover {
-  background: #3574e7;
-  color: #fff;
-}
-
-.order-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.order-card {
-  border: 1px solid #b2d4f7;
-  border-radius: 7px;
-  background: #fff;
-  margin-bottom: 1rem;
-  padding: 0.4rem 0.5rem 0.35rem 0.5rem;
-  box-shadow: 0 1px 6px #3574e711;
-  position: relative;
-  font-size: .98em;
-  transition: box-shadow 0.18s;
-}
-.order-card:hover {
-  box-shadow: 0 3px 18px #3574e735;
-  border-color: #3574e7;
-}
-.order-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.order-id {
-  font-weight: 600;
-  color: #3574e7;
-  font-size: 1.04em;
-  letter-spacing: 0.15em;
-}
-.order-status {
-  font-weight: 600;
-  text-transform: capitalize;
-  padding: 0.09em 0.5em;
-  border-radius: 14px;
-  font-size: .98em;
-  background: #e2e6ef;
-  color: #3574e7;
-  border: 1.2px solid #b2d4f7;
-  min-width: 76px;
-  text-align: center;
-  box-shadow: 0 1px 2px #3574e711;
-  letter-spacing: 0.5px;
-}
-.order-status.pending {
-  background: #fff3cd;
-  color: #ad7c00;
-  border-color: #ffe082;
-}
-.order-status.waiting {
-  background: #e0e5ff;
-  color: #2e4f9b;
-  border-color: #b6c0ff;
-}
-.order-status.paid {
-  background: #e3f6da;
-  color: #2e7d32;
-  border-color: #b2dfdb;
-}
-.order-status.completed, .order-status.closed {
-  background: #e0ffe2;
-  color: #107b3b;
-  border-color: #b2dfdb;
-}
-.order-status.cancelled {
-  background: #ffd1d1;
-  color: #c62828;
-  border-color: #ffcdd2;
-}
-.order-date {
-  color: #5e89d8;
-  font-size: 0.95em;
-  margin-bottom: 3px;
-  margin-top: 2px;
-}
-.order-items {
-  margin: 0.38em 0 0.3em 0;
-  padding-left: 0.8em;
-}
-.order-items li {
-  margin-bottom: 0.11em;
-  font-size:0.98em;
-}
-.order-total {
-  font-weight: 600;
-  color: #1d2636;
-  font-size:1.01em;
-  margin-bottom: 2px;
-}
-.order-proof {
-  margin-top: .22em;
-}
-.order-proof img {
-  max-width: 48px;
-  max-height: 48px;
-  border-radius: 3px;
-  border: 1px solid #b2d4f7;
-  box-shadow: 0 1px 3px #3574e711;
-}
-.order-location {
-  margin-top: .15em;
-  color: #3574e7;
-  font-size: .97em;
-  font-weight: 600;
-}
-.order-location-label {
-  color: #444;
-  font-weight: 600;
-}
-.order-review-box {
-  margin-top: 0.48em;
-  background: #f6f8fd;
-  border-radius: 4px;
-  border: 1.2px solid #b2d4f7;
-  padding: 0.18em 0.2em 0.13em 0.2em;
-}
-.review-label {
-  color: #3574e7;
-  font-weight: 600;
-  font-size:1em;
-}
-.review-textarea {
-  width: 97%;
-  min-height: 22px;
-  border-radius: 3px;
-  border: 1px solid #bbb;
-  margin: .13em 0 .1em 0;
-  font-size: 0.98em;
-  padding: 0.12em 0.15em;
-  background: #fff;
-  color: #1d2636;
-  transition: border 0.16s;
-}
-.review-textarea:focus {
-  border: 1.5px solid #3574e7;
-  background: #f7f9fa;
-}
-.review-btn {
-  background: #3574e7;
-  color: #fff;
-  border: none;
-  border-radius: 3px;
-  padding: 0.17em 0.9em;
-  font-size: 1em;
-  cursor: pointer;
-  font-weight: 600;
-  box-shadow: 0 1px 3px #3574e711;
-  transition: background 0.16s, color 0.16s;
-}
-.review-btn:hover {
-  background: #2554a7;
-  color: #fff;
-}
-.review-msg {
-  color: #107b3b;
-  font-size: 0.97em;
-  margin-top: 0.11em;
-}
-.review-view {
-  margin-top: 0.23em;
-  color: #111;
-  font-size: 1em;
-  background: #f6f8fd;
-  border-radius: 3px;
-  border: 1.2px solid #b2d4f7;
-  padding: 0.13em 0.18em;
-}
-.empty-msg {
-  color: #888;
-  text-align: center;
-  margin: 1.6rem;
-  font-size:1em;
-}
-.back-link {
-  display: block;
-  text-align: center;
-  margin-top: 0.7rem;
-  color: #3574e7;
-  text-decoration: none;
-  font-size: 1em;
-  font-weight: 600;
-  transition: color 0.16s;
-}
-.back-link:hover {
-  color: #2554a7;
-  text-decoration: underline;
-}
-
-@media (max-width: 600px) {
-  .container {
-    padding: 0.10rem;
-    border-radius: 3px;
-  }
-  h2 {
-    font-size: 1em;
-    margin: 0.25em 0 0.6em 0;
-  }
-  .order-card {
-    padding: 0.22rem 0.12rem 0.22rem 0.12rem;
-    border-radius: 4px;
-  }
-  .filter-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.32em;
-    padding: 0.21em 2vw 0.21em 2vw;
-    border-radius: 4px;
-  }
-  .order-proof img {
-    max-width: 33px;
-    max-height: 33px;
-  }
-  .order-id {
-    font-size:0.96em;
-  }
-  .order-status {
-    font-size: .96em;
-    min-width: 66px;
-    border-radius: 8px;
-    padding: 0.06em 0.22em;
-  }
-  .order-date {
-    font-size: .93em;
-  }
-  .order-items li {
-    font-size: 0.97em;
-  }
-  .order-total {
-    font-size: .97em;
-  }
-  .order-location {
-    font-size: .96em;
-  }
-  .review-label,
-  .review-view {
-    font-size: 0.98em;
-  }
-}
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #c9d6e5;
+      color: #222;
+      margin: 0;
+      font-size: 13px;
+    }
+    .container {
+      max-width: 100vw;
+      margin: 0 auto;
+      background: #f7f9fa;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px #3574e71a;
+      padding: 0.3rem 0.1rem 0.7rem 0.1rem;
+    }
+    h2 {
+      font-size: 1.08em;
+      margin: 0.25em 0 0.9em 0;
+      text-align: center;
+      color: #3574e7;
+      letter-spacing: 1px;
+      font-weight: bold;
+      text-shadow: 0 2px 6px #3574e71a;
+    }
+    .filter-bar {
+      margin: 0 0 1em 0;
+      display: flex;
+      align-items: center;
+      gap: 0.45em;
+      flex-wrap: wrap;
+      justify-content: center;
+      background: #e2e6ef;
+      border-radius: 8px;
+      padding: 0.42em 0.5em 0.42em 0.5em;
+      box-shadow: 0 1px 2px #3574e711;
+    }
+    .filter-bar label {
+      font-weight: 600;
+      color: #3574e7;
+      font-size: .96em;
+      letter-spacing: 0.5px;
+    }
+    .filter-bar input[type="date"] {
+      padding: 0.11em 0.42em;
+      border-radius: 4px;
+      border: 1px solid #b2d4f7;
+      font-size: .97em;
+      background: #fff;
+      color: #1d2636;
+      outline: none;
+      transition: border 0.15s;
+    }
+    .filter-bar input[type="date"]:focus {
+      border: 1.5px solid #3574e7;
+    }
+    #clearDateFilter {
+      padding:0.15em 0.7em;
+      border-radius:4px;
+      border:1px solid #3574e7;
+      background: #fff;
+      color:#3574e7;
+      font-weight:600;
+      cursor:pointer;
+      font-size:.97em;
+      transition: background 0.18s, color 0.18s;
+    }
+    #clearDateFilter:hover {
+      background: #3574e7;
+      color: #fff;
+    }
+    .order-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .order-card {
+      border: 1px solid #b2d4f7;
+      border-radius: 7px;
+      background: #fff;
+      margin-bottom: 1rem;
+      padding: 0.4rem 0.5rem 0.35rem 0.5rem;
+      box-shadow: 0 1px 6px #3574e711;
+      position: relative;
+      font-size: .98em;
+      transition: box-shadow 0.18s;
+    }
+    .order-card:hover {
+      box-shadow: 0 3px 18px #3574e735;
+      border-color: #3574e7;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .order-id {
+      font-weight: 600;
+      color: #3574e7;
+      font-size: 1.04em;
+      letter-spacing: 0.15em;
+    }
+    .order-status {
+      font-weight: 600;
+      text-transform: capitalize;
+      padding: 0.09em 0.5em;
+      border-radius: 14px;
+      font-size: .98em;
+      background: #e2e6ef;
+      color: #3574e7;
+      border: 1.2px solid #b2d4f7;
+      min-width: 76px;
+      text-align: center;
+      box-shadow: 0 1px 2px #3574e711;
+      letter-spacing: 0.5px;
+    }
+    .order-status.pending {
+      background: #fff3cd;
+      color: #ad7c00;
+      border-color: #ffe082;
+    }
+    .order-status.waiting {
+      background: #e0e5ff;
+      color: #2e4f9b;
+      border-color: #b6c0ff;
+    }
+    .order-status.paid {
+      background: #e3f6da;
+      color: #2e7d32;
+      border-color: #b2dfdb;
+    }
+    .order-status.completed, .order-status.closed {
+      background: #e0ffe2;
+      color: #107b3b;
+      border-color: #b2dfdb;
+    }
+    .order-status.cancelled {
+      background: #ffd1d1;
+      color: #c62828;
+      border-color: #ffcdd2;
+    }
+    .order-date {
+      color: #5e89d8;
+      font-size: 0.95em;
+      margin-bottom: 3px;
+      margin-top: 2px;
+    }
+    .order-items {
+      margin: 0.38em 0 0.3em 0;
+      padding-left: 0.8em;
+    }
+    .order-items li {
+      margin-bottom: 0.11em;
+      font-size:0.98em;
+    }
+    .order-total {
+      font-weight: 600;
+      color: #1d2636;
+      font-size:1.01em;
+      margin-bottom: 2px;
+    }
+    .order-proof {
+      margin-top: .22em;
+    }
+    .order-proof img {
+      max-width: 48px;
+      max-height: 48px;
+      border-radius: 3px;
+      border: 1px solid #b2d4f7;
+      box-shadow: 0 1px 3px #3574e711;
+    }
+    .order-location {
+      margin-top: .15em;
+      color: #3574e7;
+      font-size: .97em;
+      font-weight: 600;
+    }
+    .order-location-label {
+      color: #444;
+      font-weight: 600;
+    }
+    .order-review-box {
+      margin-top: 0.48em;
+      background: #f6f8fd;
+      border-radius: 4px;
+      border: 1.2px solid #b2d4f7;
+      padding: 0.18em 0.2em 0.13em 0.2em;
+    }
+    .review-label {
+      color: #3574e7;
+      font-weight: 600;
+      font-size:1em;
+    }
+    .review-textarea {
+      width: 97%;
+      min-height: 22px;
+      border-radius: 3px;
+      border: 1px solid #bbb;
+      margin: .13em 0 .1em 0;
+      font-size: 0.98em;
+      padding: 0.12em 0.15em;
+      background: #fff;
+      color: #1d2636;
+      transition: border 0.16s;
+    }
+    .review-textarea:focus {
+      border: 1.5px solid #3574e7;
+      background: #f7f9fa;
+    }
+    .review-btn {
+      background: #3574e7;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 0.17em 0.9em;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: 600;
+      box-shadow: 0 1px 3px #3574e711;
+      transition: background 0.16s, color 0.16s;
+    }
+    .review-btn:hover {
+      background: #2554a7;
+      color: #fff;
+    }
+    .review-msg {
+      color: #107b3b;
+      font-size: 0.97em;
+      margin-top: 0.11em;
+    }
+    .review-view {
+      margin-top: 0.23em;
+      color: #111;
+      font-size: 1em;
+      background: #f6f8fd;
+      border-radius: 3px;
+      border: 1.2px solid #b2d4f7;
+      padding: 0.13em 0.18em;
+    }
+    .order-receipt-btn {
+      background: #2e6aaf;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 7px 20px;
+      margin-top: 10px;
+      font-size: 1em;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background .18s;
+      box-shadow: 0 2px 8px #3574e711;
+      display: block;
+    }
+    .order-receipt-btn:hover {
+      background: #18406a;
+    }
+    .empty-msg {
+      color: #888;
+      text-align: center;
+      margin: 1.6rem;
+      font-size:1em;
+    }
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 0.7rem;
+      color: #3574e7;
+      text-decoration: none;
+      font-size: 1em;
+      font-weight: 600;
+      transition: color 0.16s;
+    }
+    .back-link:hover {
+      color: #2554a7;
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding: 0.10rem;
+        border-radius: 3px;
+      }
+      h2 {
+        font-size: 1em;
+        margin: 0.25em 0 0.6em 0;
+      }
+      .order-card {
+        padding: 0.22rem 0.12rem 0.22rem 0.12rem;
+        border-radius: 4px;
+      }
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.32em;
+        padding: 0.21em 2vw 0.21em 2vw;
+        border-radius: 4px;
+      }
+      .order-proof img {
+        max-width: 33px;
+        max-height: 33px;
+      }
+      .order-id {
+        font-size:0.96em;
+      }
+      .order-status {
+        font-size: .96em;
+        min-width: 66px;
+        border-radius: 8px;
+        padding: 0.06em 0.22em;
+      }
+      .order-date {
+        font-size: .93em;
+      }
+      .order-items li {
+        font-size: 0.97em;
+      }
+      .order-total {
+        font-size: .97em;
+      }
+      .order-location {
+        font-size: .96em;
+      }
+      .review-label,
+      .review-view {
+        font-size: 0.98em;
+      }
+    }
   </style>
 </head>
 <body>
@@ -464,6 +479,7 @@ h2 {
               ${order.deliveryLocation ? order.deliveryLocation : '<span style="color:#e74c3c;">Not Provided</span>'}
             </div>
             ${proofHtml}
+            <button class="order-receipt-btn" onclick="window.showReceipt('${order.id}')">View Receipt</button>
             ${renderStatusNote(order)}
             ${reviewSection}
           </li>
@@ -539,33 +555,132 @@ h2 {
       }
     }
 
+    // --- Receipt Generator
+    window.showReceipt = function(orderId) {
+      const order = allUserOrders.find(o => o.id === orderId);
+      if(!order) return alert("Order not found!");
+
+      // Compose items HTML
+      let itemsHtml = (order.items && Array.isArray(order.items)) ? order.items.map(item => `
+        <tr>
+          <td>${item.name}</td>
+          <td>${item.qty}</td>
+          <td>${(item.price).toFixed(2)}</td>
+          <td>${(item.price * item.qty).toFixed(2)}</td>
+        </tr>
+      `).join('') : '';
+
+      // Try to get customer name/email from order, fallback to empty
+      const customerName = order.customerName || order.name || "Customer";
+      const customerEmail = order.customerEmail || order.email || "";
+
+      // Receipt markup
+      const receiptHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <title>Receipt - mergsignature</title>
+        <style>
+          @page { size: A4; margin: 20mm; }
+          body { font-family: 'Segoe UI', Arial, sans-serif; background: #fff; margin: 0; padding: 0;}
+          .a4-container { width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff; padding: 32px 24px; box-sizing: border-box; }
+          .brand { text-align: center; font-weight: bold; font-size: 2.2rem; color: #2e6aaf; letter-spacing: 2.5px; margin-bottom: 6px; margin-top: 10px; }
+          .contact { text-align: center; margin-bottom: 26px; color: #18406a; font-size: 1.08rem; line-height: 1.7; }
+          .contact span { display: inline-block; margin: 0 10px; }
+          h2 { text-align: center; margin: 0 0 24px 0; color: #222; letter-spacing: 1.5px; font-size: 2rem; }
+          .receipt-details { width: 100%; margin-bottom: 24px; font-size: 1.07rem; }
+          .receipt-details td { padding: 6px 0; color: #333; }
+          .items { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+          .items th, .items td { border: 1px solid #e0e0e0; padding: 10px 8px; text-align: left; }
+          .items th { background: #f0f4f8; color: #2e6aaf; }
+          .total-label { text-align: right; font-size: 1.13rem; padding-right: 8px; font-weight: bold; }
+          .total-value { font-size: 1.13rem; font-weight: bold; color: #18406a; padding-left: 8px; }
+          .footer { margin-top: 40px; text-align: center; font-size: 1rem; color: #888; }
+          .print-btn { display: inline-block; margin: 30px auto 0 auto; padding: 14px 44px; background: #2e6aaf; color: #fff; border: none; border-radius: 6px; font-size: 1.10rem; cursor: pointer; transition: background .2s; box-shadow: 0 2px 8px rgba(46,106,175,0.06);}
+          .print-btn:hover { background: #18406a; }
+          @media print { .print-btn, .footer { display: none !important; } body { background: #fff; } .a4-container { box-shadow: none; margin: 0; padding: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="a4-container">
+          <div class="brand">mergsignature</div>
+          <div class="contact">
+            <span><b>Customer Care:</b></span>
+            <span>0771287206</span>
+            <span>0777290456</span> <br>
+            <span><b>Email:</b> mergsignature@gmail.com</span>
+          </div>
+          <h2>RECEIPT</h2>
+          <table class="receipt-details">
+            <tr>
+              <td><b>Receipt #:</b></td>
+              <td>${order.id.slice(0,10).toUpperCase()}</td>
+              <td><b>Date:</b></td>
+              <td>${order.date ? order.date : ""}</td>
+            </tr>
+            <tr>
+              <td><b>Billed To:</b></td>
+              <td>${customerName}</td>
+              <td><b>Email:</b></td>
+              <td>${customerEmail}</td>
+            </tr>
+          </table>
+          <table class="items">
+            <tr>
+              <th>Item Description</th>
+              <th>Qty</th>
+              <th>Unit Price (ZMW)</th>
+              <th>Amount (ZMW)</th>
+            </tr>
+            ${itemsHtml}
+            <tr>
+              <td colspan="3" class="total-label">Total (ZMW)</td>
+              <td class="total-value">${order.total ? order.total.toFixed(2) : "0.00"}</td>
+            </tr>
+          </table>
+          <button class="print-btn" onclick="window.print()">Print Receipt</button>
+          <div class="footer">
+            Thank you for choosing mergsignature!<br>
+            www.mergsignature.com | support@mergsignature.com
+          </div>
+        </div>
+      </body>
+      </html>
+      `;
+      // Open in new window for printing
+      const w = window.open("", "_blank", "width=800,height=1000");
+      w.document.write(receiptHtml);
+      w.document.close();
+    };
+
     // Inactivity timeout
-        let inactivityTimeout;
-        function resetInactivityTimeout() {
-            clearTimeout(inactivityTimeout);
-            inactivityTimeout = setTimeout(() => {
-                logout();
-            }, 600000); // 10 minutes
-        }
+    let inactivityTimeout;
+    function resetInactivityTimeout() {
+        clearTimeout(inactivityTimeout);
+        inactivityTimeout = setTimeout(() => {
+            logout();
+        }, 600000); // 10 minutes
+    }
 
-        // Set up inactivity timer
-        resetInactivityTimeout();
-        document.addEventListener('mousemove', resetInactivityTimeout);
-        document.addEventListener('keypress', resetInactivityTimeout);
-        document.addEventListener('click', resetInactivityTimeout);
-        document.addEventListener('touchstart', resetInactivityTimeout);
+    // Set up inactivity timer
+    resetInactivityTimeout();
+    document.addEventListener('mousemove', resetInactivityTimeout);
+    document.addEventListener('keypress', resetInactivityTimeout);
+    document.addEventListener('click', resetInactivityTimeout);
+    document.addEventListener('touchstart', resetInactivityTimeout);
 
-        // Disable right-click context menu
-        document.addEventListener('contextmenu', function(e) {
+    // Disable right-click context menu
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // Disable specific keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'a' || e.key === 'c')) || e.key === 'F12') {
             e.preventDefault();
-        });
-
-        // Disable specific keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'a' || e.key === 'c')) || e.key === 'F12') {
-                e.preventDefault();
-            }
-        });
+        }
+    });
   </script>
 </body>
 </html>
