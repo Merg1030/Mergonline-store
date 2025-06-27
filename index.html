@@ -1083,33 +1083,33 @@ renderDynamicProducts();
 updateAccountBar();
 setCartButtonStates();
 renderProducts();
-/*
-let inactivityTimeout;
-function resetInactivityTimeout() {
-    clearTimeout(inactivityTimeout);
-    inactivityTimeout = setTimeout(() => {
-        logout();
-    }, 600000); // 10 minutes
-}
-function logout() {
-    window.location.href = 'index.html';
-}
-resetInactivityTimeout();
-document.addEventListener('mousemove', resetInactivityTimeout);
-document.addEventListener('keypress', resetInactivityTimeout);
-document.addEventListener('click', resetInactivityTimeout);
-document.addEventListener('touchstart', resetInactivityTimeout);
+ // Inactivity timeout
+        let inactivityTimeout;
+        function resetInactivityTimeout() {
+            clearTimeout(inactivityTimeout);
+            inactivityTimeout = setTimeout(() => {
+                logout();
+            }, 600000); // 10 minutes
+        }
 
-// Security measures
-document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-});
-document.addEventListener('keydown', function (e) {
-    if ((e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'a' || e.key === 'c')) || e.key === 'F12') {
-        e.preventDefault();
-    }
-});
-*/
+        // Set up inactivity timer
+        resetInactivityTimeout();
+        document.addEventListener('mousemove', resetInactivityTimeout);
+        document.addEventListener('keypress', resetInactivityTimeout);
+        document.addEventListener('click', resetInactivityTimeout);
+        document.addEventListener('touchstart', resetInactivityTimeout);
+
+        // Disable right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // Disable specific keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'a' || e.key === 'c')) || e.key === 'F12') {
+                e.preventDefault();
+            }
+        });
 
 </script>
 </body>
