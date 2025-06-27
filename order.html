@@ -185,6 +185,16 @@
       color: #444;
       font-weight: 600;
     }
+    .order-payment-info {
+      margin-top: .25em;
+      padding: .5em .7em;
+      border-radius: 5px;
+      background: #f3f7ff;
+      color: #1d2636;
+      border: 1px solid #b2d4f7;
+      font-size: .97em;
+      line-height: 1.7em;
+    }
     .order-review-box {
       margin-top: 0.48em;
       background: #f6f8fd;
@@ -325,6 +335,10 @@
       .order-location {
         font-size: .96em;
       }
+      .order-payment-info {
+        font-size: .96em;
+        padding: .3em .4em;
+      }
       .review-label,
       .review-view {
         font-size: 0.98em;
@@ -349,7 +363,6 @@
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
     import { getFirestore, collection, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
 
-    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDXuxaO1WKLAWGVLXcVb2Q6XX_UGcTKPo0",
       authDomain: "merg-online-store.firebaseapp.com",
@@ -371,7 +384,6 @@
     const DATE_STORAGE_KEY = "mergsignature_order_datefilter";
     let loggedUser = null;
 
-    // Persist date filter
     if(localStorage.getItem(DATE_STORAGE_KEY)){
       dateFilter.value = localStorage.getItem(DATE_STORAGE_KEY);
     }
@@ -472,13 +484,38 @@
           proofHtml = `<div class="order-proof"><b>Proof:</b><br><img src="${order.proof}"></div>`;
         }
 
+        // Payment method and TID/Ref
+        let payDetails = "";
+        const paidThrough = order.paidThrough ? order.paidThrough : "";
+        const contactLine = order.contactLine || order.customerPhone || order.phone || "";
+        let tidOrRef = "";
+        if (paidThrough === "Airtel" && order.tid) tidOrRef = `<b>Airtel TID:</b> ${order.tid}`;
+        if (paidThrough === "FNB" && order.fnbRef) tidOrRef = `<b>FNB Ref:</b> ${order.fnbRef}`;
+        if (paidThrough) {
+          payDetails = `
+            <div class="order-payment-info">
+              <b>Paid Through:</b> ${paidThrough}<br>
+              ${tidOrRef ? tidOrRef + "<br>" : ""}
+              <b>Contact Line:</b> ${contactLine ? contactLine : "<span style='color:#e74c3c'>Not Provided</span>"}
+            </div>
+          `;
+        }
+
+        // Order date (placed)
+        let orderPlacedDate = "";
+        if (order.originalOrderDate) {  // Use a field like originalOrderDate if you store it
+          orderPlacedDate = `<div class="order-date"><b>Order Date:</b> ${toNiceDate(order.originalOrderDate)}</div>`;
+        } else if (order.date) {        // Otherwise fallback to 'date'
+          orderPlacedDate = `<div class="order-date"><b>Order Date:</b> ${toNiceDate(order.date)}</div>`;
+        }
+
         orderList.innerHTML += `
           <li class="order-card" id="orderCard-${order.id}">
             <div class="order-header">
               <span class="order-id">Order #${order.id.slice(0,8).toUpperCase()}</span>
               <span class="order-status ${statusClass}">${statusText}</span>
             </div>
-            <div class="order-date">${order.date ? toNiceDate(order.date) : ""}</div>
+            ${orderPlacedDate}
             <ul class="order-items">
               ${order.items.map(item => `<li>${item.name} (x${item.qty}) - ZMW ${(item.price*item.qty).toFixed(2)}</li>`).join('')}
             </ul>
@@ -487,6 +524,7 @@
               <span class="order-location-label">Delivery:</span>
               ${order.deliveryLocation ? order.deliveryLocation : '<span style="color:#e74c3c;">Not Provided</span>'}
             </div>
+            ${payDetails}
             <button class="order-receipt-btn" onclick="window.showReceipt('${order.id}')">View Receipt</button>
             ${proofHtml}
             ${renderStatusNote(order)}
@@ -574,13 +612,19 @@
         </tr>
       `).join('') : '';
 
-      // Use order fields for user details, fallback to Firebase auth user if missing
       const customerName = order.customerName || order.name || (loggedUser ? (loggedUser.displayName || "Customer") : "Customer");
       const customerEmail = order.customerEmail || order.email || (loggedUser ? loggedUser.email : "N/A");
-      const customerPhone = order.customerPhone || order.phone || "N/A";
-      const tid = order.tid || order.paymentId || order.transactionId || "";
-      const deliveryAddress = order.deliveryLocation || order.address || "";
+      const customerPhone = order.contactLine || order.customerPhone || order.phone || "N/A";
+      const paidThrough = order.paidThrough || "";
+      const tid = order.tid || "";
+      const fnbRef = order.fnbRef || "";
       const onlyDate = order.date ? toNiceDate(order.date) : "";
+      const deliveryAddress = order.deliveryLocation || order.address || "";
+
+      let paymentRow = "";
+      if (paidThrough === "Airtel") paymentRow = `<td><b>Airtel TID:</b></td><td>${tid}</td>`;
+      else if (paidThrough === "FNB") paymentRow = `<td><b>FNB Ref:</b></td><td>${fnbRef}</td>`;
+      else paymentRow = `<td colspan="2"></td>`;
 
       const receiptHtml = `
       <!DOCTYPE html>
@@ -635,12 +679,13 @@
             <tr>
               <td><b>Number:</b></td>
               <td>${customerPhone}</td>
-              <td><b>TID:</b></td>
-              <td>${tid}</td>
+              <td><b>Paid Through:</b></td>
+              <td>${paidThrough || "N/A"}</td>
             </tr>
             <tr>
+              ${paymentRow}
               <td><b>Delivery Address:</b></td>
-              <td colspan="3">${deliveryAddress}</td>
+              <td>${deliveryAddress}</td>
             </tr>
           </table>
           <table class="items">
