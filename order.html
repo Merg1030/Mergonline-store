@@ -145,7 +145,8 @@
       color: #c62828;
       border-color: #ffcdd2;
     }
-    .order-date {
+    .order-date,
+    .order-placed-date {
       color: #5e89d8;
       font-size: 0.95em;
       margin-bottom: 3px;
@@ -503,10 +504,10 @@
 
         // Order date (placed)
         let orderPlacedDate = "";
-        if (order.originalOrderDate) {  // Use a field like originalOrderDate if you store it
-          orderPlacedDate = `<div class="order-date"><b>Order Date:</b> ${toNiceDate(order.originalOrderDate)}</div>`;
-        } else if (order.date) {        // Otherwise fallback to 'date'
-          orderPlacedDate = `<div class="order-date"><b>Order Date:</b> ${toNiceDate(order.date)}</div>`;
+        if (order.originalOrderDate) {
+          orderPlacedDate = `<div class="order-placed-date"><b>Order Date:</b> ${toNiceDate(order.originalOrderDate)}</div>`;
+        } else if (order.date) {
+          orderPlacedDate = `<div class="order-placed-date"><b>Order Date:</b> ${toNiceDate(order.date)}</div>`;
         }
 
         orderList.innerHTML += `
@@ -707,8 +708,6 @@
             www.mergsignature.com | support@mergsignature.com
           </div>
         </div>
-      </body>
-      </html>
       `;
       const w = window.open("", "_blank", "width=800,height=1000");
       w.document.write(receiptHtml);
