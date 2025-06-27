@@ -369,8 +369,9 @@
     const dateFilter = document.getElementById('dateFilter');
     const clearDateFilterBtn = document.getElementById('clearDateFilter');
     const DATE_STORAGE_KEY = "mergsignature_order_datefilter";
+    let loggedUser = null;
 
-    // --- Persist date filter
+    // Persist date filter
     if(localStorage.getItem(DATE_STORAGE_KEY)){
       dateFilter.value = localStorage.getItem(DATE_STORAGE_KEY);
     }
@@ -397,9 +398,11 @@
         orderList.innerHTML = '';
         emptyMsg.textContent = 'You must be logged in to see your orders.';
         emptyMsg.style.display = '';
+        loggedUser = null;
         return;
       }
       userUID = user.uid;
+      loggedUser = user;
       if (unsubscribe) unsubscribe();
       unsubscribe = onSnapshot(ordersRef, (snap) => {
         allUserOrders = snap.docs
@@ -413,7 +416,6 @@
       });
     });
 
-    // Helper: Convert "6/12/2025, 3:15:25 PM" to "2025-06-12"
     function toISODate(str) {
       if (!str) return "";
       const d = new Date(str);
@@ -421,7 +423,6 @@
       return d.toISOString().slice(0,10);
     }
 
-    // Helper: Format date as "DD.MM.YYYY"
     function toNiceDate(str) {
       if (!str) return "";
       const d = new Date(str);
@@ -453,7 +454,6 @@
         let statusText = getStatusText(order.status);
         let reviewSection = "";
 
-        // Show review form if order is completed/closed and no review yet
         if((order.status==="completed"||order.status==="closed") && !order.review){
           reviewSection = `
             <div class="order-review-box" id="reviewBox-${order.id}">
@@ -467,7 +467,6 @@
           reviewSection = `<div class="review-view"><b>Your Review:</b> ${escapeHTML(order.review)}</div>`;
         }
 
-        // Different display for proof and status
         let proofHtml = "";
         if(order.proof){
           proofHtml = `<div class="order-proof"><b>Proof:</b><br><img src="${order.proof}"></div>`;
@@ -495,7 +494,6 @@
           </li>
         `;
       });
-      // Attach review submit handlers after rendering
       orders.forEach(order=>{
         if((order.status==="completed"||order.status==="closed") && !order.review){
           const btn = document.querySelector(`#orderCard-${order.id} .review-btn`);
@@ -537,13 +535,11 @@
       }
       return "";
     }
-    // --- Secure HTML escaping for user review
     function escapeHTML(str){
       return (str||"").replace(/[&<>"']/g, function(m) {
         return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m];
       });
     }
-    // --- Review submission
     window.submitReview = async function(orderId){
       const textarea = document.getElementById(`reviewText-${orderId}`);
       const msg = document.getElementById(`reviewMsg-${orderId}`);
@@ -565,12 +561,10 @@
       }
     }
 
-    // --- Receipt Generator
     window.showReceipt = function(orderId) {
       const order = allUserOrders.find(o => o.id === orderId);
       if(!order) return alert("Order not found!");
 
-      // Compose items HTML
       let itemsHtml = (order.items && Array.isArray(order.items)) ? order.items.map(item => `
         <tr>
           <td>${item.name}</td>
@@ -580,18 +574,14 @@
         </tr>
       `).join('') : '';
 
-      // Try to get customer name/email from order, fallback to empty
-      const customerName = order.customerName || order.name || "Customer";
-      const customerEmail = order.customerEmail || order.email || "";
-
-      // TID and delivery address
+      // Use order fields for user details, fallback to Firebase auth user if missing
+      const customerName = order.customerName || order.name || (loggedUser ? (loggedUser.displayName || "Customer") : "Customer");
+      const customerEmail = order.customerEmail || order.email || (loggedUser ? loggedUser.email : "N/A");
+      const customerPhone = order.customerPhone || order.phone || "N/A";
       const tid = order.tid || order.paymentId || order.transactionId || "";
       const deliveryAddress = order.deliveryLocation || order.address || "";
-
-      // Format date as DD.MM.YYYY
       const onlyDate = order.date ? toNiceDate(order.date) : "";
 
-      // Receipt markup
       const receiptHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -643,10 +633,14 @@
               <td>${customerEmail}</td>
             </tr>
             <tr>
+              <td><b>Number:</b></td>
+              <td>${customerPhone}</td>
               <td><b>TID:</b></td>
               <td>${tid}</td>
+            </tr>
+            <tr>
               <td><b>Delivery Address:</b></td>
-              <td>${deliveryAddress}</td>
+              <td colspan="3">${deliveryAddress}</td>
             </tr>
           </table>
           <table class="items">
@@ -671,19 +665,17 @@
       </body>
       </html>
       `;
-      // Open in new window for printing
       const w = window.open("", "_blank", "width=800,height=1000");
       w.document.write(receiptHtml);
       w.document.close();
     };
 
-    // Inactivity timeout, security, etc.
     let inactivityTimeout;
     function resetInactivityTimeout() {
         clearTimeout(inactivityTimeout);
         inactivityTimeout = setTimeout(() => {
             logout();
-        }, 600000); // 10 minutes
+        }, 600000);
     }
 
     resetInactivityTimeout();
