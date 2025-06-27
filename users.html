@@ -122,8 +122,9 @@
       .users-table td:before { position: absolute; left: 10px; top: 12px; width: 45%; white-space: nowrap; font-weight:bold;}
       .users-table td:nth-of-type(1):before { content: "Name"; }
       .users-table td:nth-of-type(2):before { content: "Email"; }
-      .users-table td:nth-of-type(3):before { content: "Role"; }
-      .users-table td:nth-of-type(4):before { content: "Registered"; }
+      .users-table td:nth-of-type(3):before { content: "Number"; }
+      .users-table td:nth-of-type(4):before { content: "Role"; }
+      .users-table td:nth-of-type(5):before { content: "Registered"; }
     }
   </style>
 </head>
@@ -175,6 +176,7 @@
             <tr>
               <th>Name</th>
               <th>Email</th>
+              <th>Number</th>
               <th>Role</th>
               <th>Registered</th>
             </tr>
@@ -182,16 +184,15 @@
           <tbody>
         `;
         users.forEach(user => {
-          // Show name in "Name" column, not username. Show admin badge if admin.
           html += `<tr>
               <td>
                 ${user.name || ""}
-                ${user.email === "chris@mergjewelry.com" || user.role === "admin" ? '<span class="admin-label">Admin</span>' : ''}
+                ${(user.email === "chris@mergjewelry.com" || user.role === "admin") ? '<span class="admin-label">Admin</span>' : ''}
               </td>
               <td>${user.email || ""}</td>
+              <td>${user.phone || ""}</td>
               <td>${user.role === "admin" || user.email === "chris@mergjewelry.com" ? "admin" : "customer"}</td>
               <td style="text-align:center;">
-                ${user.registered ? '<span class="tick">&#10004;</span>' : ''}
                 <span class="tick">&#10004;</span>
               </td>
             </tr>`;
