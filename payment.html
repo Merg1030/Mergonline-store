@@ -9,7 +9,8 @@
     .container { max-width: 400px; margin: 40px auto; background: #fff; border-radius: 9px; padding: 2em 2em 1.2em 2em; box-shadow: 0 2px 16px #0001; }
     h2 { text-align: center; color: #224; }
     label { margin-top: 1em; font-weight: bold; display: block; }
-    input[type="text"] { width: 100%; padding: 0.7em; margin-top: 0.3em; margin-bottom: 1.1em; border: 1px solid #bbb; border-radius: 4px; }
+    input[type="text"], select { width: 100%; padding: 0.7em; margin-top: 0.3em; margin-bottom: 1.1em; border: 1px solid #bbb; border-radius: 4px; }
+    .pay-details { display: none; }
     button { width: 100%; padding: 0.9em; background: #3574e7; color: #fff; border: none; font-size: 1.1em; border-radius: 6px; }
     .msg { text-align: center; margin-top: 1.2em; font-size: 1em; }
     .success { color: green; }
@@ -20,10 +21,28 @@
   <div class="container">
     <h2>Submit Payment</h2>
     <form id="paymentForm" autocomplete="off" style="display:none;">
-      <label for="tid">Airtel TID:</label>
-      <input type="text" id="tid" maxlength="24" required>
+      <label for="contact">Contact Line (WhatsApp/Phone):</label>
+      <input type="text" id="contact" maxlength="20" required placeholder="e.g. 097xxxxxxx">
+
+      <label for="payMethod">Paid Through:</label>
+      <select id="payMethod" required>
+        <option value="" selected disabled>Select Payment Method</option>
+        <option value="Airtel">Airtel Money</option>
+        <option value="FNB">FNB</option>
+      </select>
+
+      <div id="airtelDiv" class="pay-details">
+        <label for="tid">Airtel Transaction ID (last 6 chars):</label>
+        <input type="text" id="tid" maxlength="6" pattern="[A-Za-z0-9]{6}" placeholder="e.g. M41693">
+      </div>
+      <div id="fnbDiv" class="pay-details">
+        <label for="fnbRef">FNB Reference:</label>
+        <input type="text" id="fnbRef" maxlength="24" placeholder="e.g. 1234567890">
+      </div>
+
       <label for="location">Delivery Location:</label>
       <input type="text" id="location" maxlength="48" required>
+
       <button type="submit">Submit</button>
     </form>
     <div class="msg" id="msg"></div>
@@ -50,16 +69,33 @@
 
     const form = document.getElementById('paymentForm');
     const msg = document.getElementById('msg');
+    const payMethod = document.getElementById('payMethod');
+    const airtelDiv = document.getElementById('airtelDiv');
+    const fnbDiv = document.getElementById('fnbDiv');
+    const tidInput = document.getElementById('tid');
+    const fnbRefInput = document.getElementById('fnbRef');
+    const contactInput = document.getElementById('contact');
 
     let currentUser = null;
 
-    // Show form only if logged in
+    payMethod.addEventListener('change', function() {
+      airtelDiv.style.display = payMethod.value === "Airtel" ? "" : "none";
+      fnbDiv.style.display = payMethod.value === "FNB" ? "" : "none";
+      // Set required attributes accordingly
+      tidInput.required = payMethod.value === "Airtel";
+      fnbRefInput.required = payMethod.value === "FNB";
+    });
+
     onAuthStateChanged(auth, user => {
       if (user) {
         currentUser = user;
         form.style.display = "";
         msg.textContent = "";
         msg.className = "msg";
+        // Optionally pre-fill contact number from user profile if available
+        if (user.phoneNumber && !contactInput.value) {
+          contactInput.value = user.phoneNumber;
+        }
       } else {
         currentUser = null;
         form.style.display = "none";
@@ -79,11 +115,23 @@
         return;
       }
 
-      const tid = document.getElementById('tid').value.trim();
+      const contact = contactInput.value.trim();
+      const payM = payMethod.value;
+      const tid = tidInput.value.trim().toUpperCase();
+      const fnbRef = fnbRefInput.value.trim();
       const location = document.getElementById('location').value.trim();
 
-      if (!tid || !location) {
+      if (!contact || !payM || !location ||
+          (payM === "Airtel" && !tid) ||
+          (payM === "FNB" && !fnbRef)) {
         msg.textContent = "Please fill in all fields.";
+        msg.className = "msg error";
+        return;
+      }
+
+      // Validate Airtel TID as 6 chars alphanumeric
+      if (payM === "Airtel" && !/^[A-Za-z0-9]{6}$/.test(tid)) {
+        msg.textContent = "Airtel TID must be 6 letters/numbers (e.g. M41693).";
         msg.className = "msg error";
         return;
       }
@@ -109,14 +157,20 @@
         const docSnap = snap.docs[0];
         const orderData = docSnap.data();
 
-        // Update that order with payment info
-        await setDoc(doc(db, "orders", docSnap.id), {
+        // Compose payment info to store
+        let updatePayload = {
           ...orderData,
-          tid,
-          deliveryLocation: location,
           status: "paid",
-          date: serverTimestamp() // update payment time
-        }, { merge: true });
+          date: serverTimestamp(),
+          deliveryLocation: location,
+          contactLine: contact,
+          paidThrough: payM
+        };
+        if (payM === "Airtel") updatePayload.tid = tid;
+        if (payM === "FNB") updatePayload.fnbRef = fnbRef;
+
+        // Update that order with payment info
+        await setDoc(doc(db, "orders", docSnap.id), updatePayload, { merge: true });
 
         // Redirect to index.html instantly after submission
         window.location.replace("index.html");
