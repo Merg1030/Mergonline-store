@@ -1,1116 +1,833 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MergSignature</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: #c9d6e5;
-  margin: 0;
-  padding: 0;
-  color: #222;
-}
-
-header {
-  background: #849ca2;
-  color: #fff;
-  padding: 0 0 1.2rem 0;
-  margin-bottom: 0;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-  position: relative;
-  z-index: 11;
-}
-
-/* Make top-bar and its content smaller */
-.top-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.6rem 1rem 0.1rem 1rem;
-  max-width: 100vw;
-  margin: 0 auto;
-}
-
-.brand-title {
-  font-size: 1.1rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  color: #ffffff;
-  margin: 0;
-  text-shadow: 0 1px 2px #2223;
-}
-
-.nav-accounts {
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  font-size: 0.83rem;
-  flex-wrap: wrap;
-}
-.nav-accounts .greet {
-  color: rgb(255, 255, 255);
-  font-weight: 500;
-  margin-right: 0.1em;
-}
-.nav-accounts .username {
-  color: #000000;
-  font-weight: bold;
-  margin-right: 0.15em;
-  text-shadow: 0 1px 2px #2225;
-}
-.nav-accounts button,
-.nav-accounts a {
-  color: #fff;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.83rem;
-  text-decoration: none;
-  border-radius: 4px;
-  padding: 0.11em 0.39em;
-  transition: background 0.15s, color 0.15s;
-  font-weight: 500;
-}
-.nav-accounts button:hover,
-.nav-accounts a:hover {
-  background: #3574e7;
-  color: #fff;
-  text-decoration: none;
-}
-.cart-link {
-  background: #3574e7;
-  color: #fff !important;
-  padding: 0.23rem 0.7rem;
-  border-radius: 4px;
-  text-decoration: none !important;
-  font-weight: bold;
-  transition: background .2s;
-  margin-left: 0.23rem;
-  border: none;
-  cursor: pointer;
-  display: inline-block;
-  font-size: 0.85rem;
-}
-.cart-link:hover {
-  background: #2554a7;
-  color: #fff !important;
-}
-.account-link {
-  font-weight: 500;
-}
-.admin-link {
-  color: #fff;
-  background: #2225;
-  border-radius: 4px;
-  font-size: 0.82rem;
-}
-.admin-link:hover {
-  background: #3574e7;
-}
-.shop-tagline {
-  margin: 0.4em 0 0.2em 0;
-  text-align: center;
-  color: #000000;
-  font-size: 0.92rem;
-  letter-spacing: .01em;
-  font-weight: 500;
-}
-
-/* --- Responsive: even smaller nav on mobile --- */
-@media (max-width: 650px) {
-  .top-bar {
-    padding: 0.38rem 1vw 0.05rem 1vw;
-  }
-  .brand-title { font-size: 0.93rem; }
-  .nav-accounts { font-size: 0.71rem; gap: 0.25rem; }
-  .nav-accounts button,
-  .nav-accounts a { font-size: 0.72rem; padding: 0.07em 0.27em;}
-  .cart-link { font-size: 0.73rem; padding: 0.14rem 0.41rem; }
-  .admin-link { font-size: 0.68rem; }
-  .shop-tagline { font-size: 0.74rem; }
-}
-
-/* Sticky filter bar */
-.filters-bar {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: nowrap;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto 1rem auto;
-  padding: 0.5rem 0.3rem;
-  background: #fff;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  border-bottom: 1px solid #e2e6ef;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-  width: 100vw;
-  overflow-x: auto;
-  min-height: 44px;
-}
-.filters-bar select,
-.filters-bar input {
-  padding: 0.38rem 0.7rem;
-  border-radius: 16px;
-  border: 1px solid #bbb;
-  font-size: 0.98rem;
-  margin: 0 2px;
-  background: #f7f9fa;
-  outline: none;
-  transition: border-color .18s;
-  min-width: 110px;
-  max-width: 170px;
-  box-sizing: border-box;
-  box-shadow: 0 1px 2px #e9e9ee;
-}
-.filters-bar select:focus,
-.filters-bar input:focus {
-  border-color: #000000;
-}
-.filters-bar label {
-  font-size: 0.97rem;
-  color: #3574e7;
-  font-weight: 500;
-  margin-right: 0.25em;
-}
-@media (max-width: 650px) {
-  .filters-bar {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    gap: 0.3rem;
-    padding: 0.45rem 0.1rem 0.4rem 0.2rem;
-  }
-  .filters-bar select,
-  .filters-bar input {
-    padding: 0.32rem 0.4rem;
-    min-width: 88px;
-    font-size: 0.92rem;
-    border-radius: 13px;
-    max-width: 120px;
-  }
-}
-
-/* --- Product Grid & Card Styles --- */
-.products-scroller {
-  /* Remove max-width so it goes edge-to-edge on large screens */
-  width: 100vw;
-  margin: 2rem 0 0 0;
-  padding: 0;
-}
-
-.products-grid {
-  display: grid;
-  /* Wider min column width for nice big PC cards, less gap */
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 0.8rem;
-  width: 100%;
-  margin: 0 auto;
-  /* Remove extra padding/margin so it fills screen */
-  padding: 0 1vw;
-}
-
-@media (max-width: 900px) {
-  .products-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 0.7rem;
-    padding: 0 2vw;
-  }
-}
-
-/* Card padding for left/right sides of screen */
-.product-card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: 0 1px 8px rgba(0,0,0,0.08);
-  padding: 0.7rem 1.3rem 0.9rem 1.3rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  margin: 0;
-  text-decoration: none;
-  color: inherit;
-  transition: transform .1s;
-}
-@media (max-width: 650px) {
-  .product-card {
-    padding-left: 0.7rem;
-    padding-right: 0.7rem;
-  }
-}
-.product-card:hover {
-  transform: translateY(-3px) scale(1.06);
-}
-.product-card img {
-  width: 100%;
-  height: 120px;
-  object-fit: cover;
-  margin-bottom: 0.41rem;
-  box-shadow: 0 1px 3px #ececec;
-}
-.product-card[data-shape="round"] img {
-  border-radius: 50% !important;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-}
-.product-card[data-shape="square"] img {
-  border-radius: 8px !important;
-}
-.product-card h3 {
-  font-size: 0.87rem;
-  margin-bottom: 0.12rem;
-  text-align: center;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.product-card p {
-  font-size: xx-small;
-  margin: 0 0 0.12rem 0;
-  text-align: center;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  height: 2.5em;
-  
-  color: #000000;
-}
-.product-card .price {
-  font-size: 0.84rem;
-  margin-bottom: 0.19rem;
-  font-weight: bold;
-  color: #000000;
-}
-.product-card button {
-  font-size: 0.81rem;
-  padding: 0.25rem 0.7rem;
-  background: #1d2636;
-  color: #fff;
-  border: none;
-  border-radius: 13px;
-  cursor: pointer;
-  transition: background .2s;
-  margin-top: 0.19rem;
-}
-.product-card button:disabled {
-  background: #bbb;
-  cursor: not-allowed;
-  color: #eee;
-}
-@media (min-width: 650px) {
-  .products-scroller {
-    width: 100vw;
-  }
-  .product-card {
-    padding: 1rem 2rem 1.2rem 2rem;
-  }
-  .product-card img {
-    height: 160px;
-    margin-bottom: 1rem;
-  }
-  .product-card h3 {
-    font-size: 1.1rem;
-  }
-  .product-card p {
-    font-size: 0.98rem;
-  }
-  .product-card .price {
-    font-size: 1.1rem;
-  }
-  .product-card button {
-    font-size: 1rem;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-  }
-}
-
-/* --- About & Misc Styles --- */
-.about {
-  background: #c6c2c2;
-  padding: 2rem;
-  margin: 2rem auto 2rem auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(79,140,255,0.06);
-}
-.about h2 {
-  margin-top: 0;
-}
-.about-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-.about-card {
-  background: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-.about-card h3 {
-  color: #1d2636;
-  margin-top: 0;
-  border-bottom: 2px solid #3574e7;
-  padding-bottom: 0.5rem;
-}
-.contact-info {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin: 0.8rem 0;
-}
-.contact-info i {
-  font-style: normal;
-  color: #5e89d8;
-  font-weight: bold;
-}
-.steps {
-  counter-reset: step-counter;
-  margin: 1rem 0;
-}
-.step {
-  position: relative;
-  padding-left: 2.5rem;
-  margin-bottom: 1.2rem;
-}
-.step:before {
-  counter-increment: step-counter;
-  content: counter(step-counter);
-  position: absolute;
-  left: 0;
-  top: 0;
-  background: #6c6969;
-  color: white;
-  width: 1.8rem;
-  height: 1.8rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.9rem;
-}
-@media (max-width: 800px) {
-  .about {
-    max-width: 98vw;
-    padding: 1rem;
-  }
-  .about-grid {
-    grid-template-columns: 1fr;
-  }
-}
-/* Modal styles */
-.modal-bg {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.5);
-  z-index: 100;
-  justify-content: center;
-  align-items: center;
-}
-.modal {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-.modal h3 {
-  margin-top: 0;
-  color: #1d2636;
-}
-.modal input,
-.modal textarea,
-.modal select {
-  display: block;
-  width: 100%;
-  padding: 0.8rem;
-  margin: 0.8rem 0;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-.modal button[type="submit"] {
-  background: #3574e7;
-  color: white;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  width: 100%;
-  margin: 1rem 0;
-}
-.modal button[type="submit"]:hover {
-  background: #2554a7;
-}
-.auth-switch {
-  text-align: center;
-  margin-top: 1rem;
-}
-.auth-switch button {
-  background: none;
-  border: none;
-  color: #3574e7;
-  cursor: pointer;
-  font-weight: bold;
-}
-.auth-switch button:hover {
-  text-decoration: underline;
-}
-.close-modal-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #666;
-}
-.auth-error {
-  color: #d32f2f;
-  background: #ffebee;
-  padding: 0.8rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
-}
-  </style>
-</head>
-<body>
-<header>
-  <div class="top-bar">
-    <div class="brand-title">MergSignature</div>
-    <div class="nav-accounts" id="accountBar"></div>
-  </div>
-  <div class="shop-tagline">Your one-stop shop for trendy jewelry and accessories!</div>
-</header>
-
-<section>
-  <h2 style="text-align:center; margin-top:1.3rem;">Our Products</h2>
-  <div class="filters-bar" id="filtersBar">
-    <select id="categoryFilter">
-      <option value="">All Categories</option>
-      <option value="Necklace">Necklaces</option>
-      <option value="Earring">Earrings</option>
-      <option value="Bracelet">Bracelets</option>
-      <option value="Anklet">Anklets</option>
-      <option value="Belly Earring">Belly Earrings</option>
-      <option value="Nose Ring">Nose Rings</option>
-      <option value="Shoes">shoes</option>
-      <option value="Perfumes">Perfumes</option>
-    </select>
-    <input id="searchInput" type="text" placeholder="Search jewelry...">
-  </div>
-  <div class="products-scroller">
-    <!-- All products are rendered here as a grid -->
-    <div class="products-grid" id="dynamic-products-row"></div>
-  </div>
-</section>
-
-<section class="about">
-  <h2>About MergSignature</h2>
-  <p>
-    Welcome to <strong>MergSignature</strong> - Lusaka's premier online destination for exquisite, handcrafted jewelry. 
-    We specialize in bringing you the finest necklaces, earrings, bracelets, and more, all at competitive prices in Zambian Kwacha (ZMW).
-  </p>
-  <div class="about-grid">
-    <div class="about-card">
-      <h3>Our Story</h3>
-      <p>Founded in Lusaka, Zambia, MergSignature was born from a passion for creating beautiful, high-quality accessories that make a statement. Each piece is carefully selected or crafted to ensure exceptional quality and style.</p>
-      <p>While we're based in Lusaka, we serve customers across Zambia through our convenient online store, bringing signature jewelry pieces right to your doorstep.</p>
-    </div>
-    <div class="about-card">
-      <h3>Contact Details</h3>
-      <div class="contact-info"><i>Phone:</i> +260 777290456</div>
-      <div class="contact-info"><i>Email:</i>mergsignature@gmail.com</div>
-      <div class="contact-info"><i>WhatsApp:</i> +260 777290456</div>
-      <div class="contact-info"><i>Location:</i> Lusaka, Zambia (Online Store)</div>
-      <div class="contact-info"><i>Business Hours:</i> Mon-Sat: 8:00 AM - 6:00 PM</div>
-    </div>
-    <div class="about-card">
-      <h3>Customer Care</h3>
-      <p>We're committed to your complete satisfaction:</p>
-      <ul>
-        <li>Free delivery within Lusaka for orders over ZMW 300</li>
-        <li>Nationwide shipping available</li>
-        <li>7-day return policy (unworn items)</li>
-        <li>Secure payment options</li>
-        <li>Responsive customer support</li>
-      </ul>
-      <p>Have questions? Contact us via phone, WhatsApp, or email - we typically respond within 2 business hours.</p>
-    </div>
-    <div class="about-card">
-      <h3>How to Order</h3>
-      <div class="steps">
-        <div class="step"><strong>Browse</strong> our collection and select your favorite pieces</div>
-        <div class="step"><strong>Add</strong> items to your cart</div>
-        <div class="step"><strong>Checkout</strong> securely (login or register required)</div>
-        <div class="step"><strong>Choose</strong> delivery method and make payment</div>
-        <div class="step"><strong>Receive</strong> your order within 2-5 business days</div>
-      </div>
-      <p>We accept mobile money ( Airtel) and bank transfers.</p>
-    </div>
-  </div>
-</section>
-
-<!-- AUTH MODAL -->
-<div class="modal-bg" id="modalBg">
-  <div class="modal" id="authModal"></div>
-</div>
-<!-- ADMIN ADD PRODUCT MODAL -->
-<div class="modal-bg" id="addProductBg">
-  <div class="modal" id="addProductModal"></div>
-</div>
-<!-- CART SELECT MODAL -->
-<div class="modal-bg" id="cartSelectBg" style="display:none">
-  <div class="modal" id="cartSelectModal"></div>
-</div>
-
-<script type="module">
-// Firebase imports
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, updateProfile, signOut } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-auth.js";
-import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
-
-// Firebase config
-const firebaseConfig = {
-  apiKey: "AIzaSyDXuxaO1WKLAWGVLXcVb2Q6XX_UGcTKPo0",
-  authDomain: "merg-online-store.firebaseapp.com",
-  projectId: "merg-online-store",
-  storageBucket: "merg-online-store.appspot.com",
-  messagingSenderId: "1096457005407",
-  appId: "1:1096457005407:web:64fb56790dad61b962aeea",
-  measurementId: "G-V6WM36V9BD"
-};
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const adminEmails = [
-  "admin@mergjewelry.com", "susan@mergjewelry.com", "chris@mergjewelry.com"
-];
-
-// CART HELPERS -- FIRESTORE ONLY
-function getUserUID() {
-  return auth.currentUser ? auth.currentUser.uid : null;
-}
-async function getCartFromFirestore() {
-  const uid = getUserUID();
-  if (!uid) return [];
-  const cartDoc = await getDoc(doc(db, "carts", uid));
-  if (cartDoc.exists()) {
-    return cartDoc.data().items || [];
-  }
-  return [];
-}
-async function saveCartToFirestore(cart) {
-  const uid = getUserUID();
-  if (!uid) return;
-  await setDoc(doc(db, "carts", uid), { items: cart });
-}
-async function getCart() {
-  const uid = getUserUID();
-  if (!uid) return [];
-  return await getCartFromFirestore();
-}
-async function setCart(cart) {
-  await saveCartToFirestore(cart);
-  updateAccountBar();
-}
-async function getCartCount() {
-  const uid = getUserUID();
-  if (!uid) return 0;
-  const cart = await getCartFromFirestore();
-  return cart.reduce((t,i)=>t+(i.qty||1),0);
-}
-
-// AUTH MODAL LOGIC
-function showAuthModal(tab = "login") {
-  const modalBg = document.getElementById('modalBg');
-  const modal = document.getElementById('authModal');
-  let currentTab = tab;
-  function render(errorMsg = '') {
-    modal.innerHTML = currentTab === "login" ? loginForm(errorMsg) : signupForm(errorMsg);
-    modalBg.style.display = 'flex';
-    document.getElementById('closeModal').onclick = () => { modalBg.style.display = 'none'; };
-    if (currentTab === "login") {
-      document.getElementById('toReg').onclick = (e) => { e.preventDefault(); currentTab = "signup"; render(); };
-      document.getElementById('loginForm').onsubmit = loginHandler;
-    } else {
-      document.getElementById('toLogin').onclick = (e) => { e.preventDefault(); currentTab = "login"; render(); };
-      document.getElementById('signupForm').onsubmit = registerHandler;
-    }
-  }
-  function loginForm(error) {
-    return `
-      <h3>Sign In</h3>
-      <form id="loginForm">
-        ${error ? `<div class="auth-error">${error}</div>` : ''}
-        <input required type="email" id="signin-email" placeholder="Email">
-        <input required type="password" id="signin-password" placeholder="Password">
-        <button type="submit">Sign In</button>
-      </form>
-      <div class="auth-switch">
-        Don't have an account? <button type="button" id="toReg">Sign Up</button>
-      </div>
-      <button id="closeModal" class="close-modal-btn">&times;</button>
-    `;
-  }
-  function signupForm(error) {
-    return `
-      <h3>Sign Up</h3>
-      <form id="signupForm">
-        ${error ? `<div class="auth-error">${error}</div>` : ''}
-        <input required type="text" id="signup-name" placeholder="Full Name">
-        <input required type="text" id="signup-phone" placeholder="Phone Number">
-        <input required type="email" id="signup-email" placeholder="Email">
-        <input required type="password" id="signup-password" placeholder="Password (min 6 chars)">
-        <button type="submit">Sign Up</button>
-      </form>
-      <div class="auth-switch">
-        Already have an account? <button type="button" id="toLogin">Sign In</button>
-      </div>
-      <button id="closeModal" class="close-modal-btn">&times;</button>
-    `;
-  }
-  async function loginHandler(e) {
-    e.preventDefault();
-    const email = document.getElementById('signin-email').value.trim();
-    const password = document.getElementById('signin-password').value;
-    try {
-      const res = await signInWithEmailAndPassword(auth, email, password);
-      const userDoc = await getDoc(doc(db, "users", res.user.uid));
-      if (userDoc.exists()) {
-        localStorage.setItem('name', userDoc.data().name);
-        localStorage.setItem('phone', userDoc.data().phone);
-      }
-      localStorage.setItem('email', email);
-      modalBg.style.display = "none";
-      updateAccountBar();
-      setCartButtonStates();
-    } catch (err) {
-      let errorMsg = "Login failed. Please try again.";
-      if (err.code === "auth/invalid-email") errorMsg = "Invalid email format";
-      else if (err.code === "auth/user-not-found") errorMsg = "No account found with this email";
-      else if (err.code === "auth/wrong-password") errorMsg = "Incorrect password";
-      else if (err.code === "auth/too-many-requests") errorMsg = "Too many attempts. Try again later.";
-      render(errorMsg);
-    }
-  }
-  async function registerHandler(e) {
-    e.preventDefault();
-    const name = document.getElementById('signup-name').value.trim();
-    const phone = document.getElementById('signup-phone').value.trim();
-    const email = document.getElementById('signup-email').value.trim();
-    const password = document.getElementById('signup-password').value;
-    try {
-      if (password.length < 6) throw new Error("Password must be at least 6 characters");
-      const res = await createUserWithEmailAndPassword(auth, email, password);
-      await setDoc(doc(db, "users", res.user.uid), { name, phone, email });
-      localStorage.setItem('name', name);
-      localStorage.setItem('phone', phone);
-      localStorage.setItem('email', email);
-      try { await updateProfile(res.user, { displayName: name }); } catch (profileErr) {}
-      render("Registration successful! Please sign in.");
-      setTimeout(() => { currentTab = "login"; render(); }, 1200);
-    } catch (err) {
-      let errorMsg = "Registration failed. Please try again.";
-      if (err.code === "auth/email-already-in-use") errorMsg = "Email already in use";
-      else if (err.code === "auth/invalid-email") errorMsg = "Invalid email format";
-      else if (err.code === "auth/weak-password") errorMsg = "Password should be at least 6 characters";
-      else if (err.message === "Password must be at least 6 characters") errorMsg = err.message;
-      render(errorMsg);
-    }
-  }
-  render();
-}
-window.showAuthModal = showAuthModal;
-
-async function logout() {
-  try {
-    await signOut(auth);
-    localStorage.removeItem('name');
-    localStorage.removeItem('phone');
-    localStorage.removeItem('email');
-    updateAccountBar();
-    setCartButtonStates();
-  } catch (err) {
-    console.error("Logout error:", err);
-  }
-}
-window.logout = logout;
-
-function isAdminUser() {
-  const email = localStorage.getItem('email');
-  return email && adminEmails.includes(email);
-}
-function getCurrentName() {
-  return localStorage.getItem('name') || localStorage.getItem('email') || "";
-}
-async function updateAccountBar() {
-  const bar = document.getElementById('accountBar');
-  let content = '';
-  const email = localStorage.getItem('email');
-  const name = getCurrentName();
-  let cartCount = 0;
-  if (email) {
-    cartCount = await getCartCount();
-    content += `<span class="greet">Welcome,</span><span class="username">${name}</span>`;
-    content += `<button onclick="logout();">Logout</button>`;
-    content += `<a href="customerchat.html" class="account-link">Live Support</a>`;
-    content += `<a href="order.html" class="account-link">Orders</a>`;
-    if (isAdminUser()) {
-      content += `<a href="admin.html" class="admin-link">Admin Dashboard</a>`;
-    }
-  } else {
-    content += `
-      <button onclick="showAuthModal('login')">Login</button>
-      <button onclick="showAuthModal('signup')">Register</button>`;
-  }
-  content += `<a href="cart.html" class="cart-link">🛒 (${cartCount})</a>`;
-  bar.innerHTML = content;
-  setCartButtonStates();
-}
-function setCartButtonStates() {
-  const isAdmin = isAdminUser();
-  const isLogged = !!localStorage.getItem('email');
-  document.querySelectorAll('.product-card .add-to-cart-btn').forEach(btn => {
-    btn.disabled = !isLogged || isAdmin;
-    btn.title = !isLogged
-      ? "Login to add to cart"
-      : isAdmin
-        ? "Admins cannot add to cart"
-        : "";
-  });
-}
-
-// Show modal to select color/size (if any) before adding to cart
-async function showCartSelectModal(prodId) {
-  const prodDoc = await getDoc(doc(db, "products", prodId));
-  if (!prodDoc.exists()) {
-    alert('Product not found!');
-    return;
-  }
-  const prod = prodDoc.data();
-  let colorOptions = '';
-  let sizeOptions = '';
-  if (Array.isArray(prod.colors) && prod.colors.length) {
-    colorOptions = `<label>Color:</label><select id="cartColor">${prod.colors.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>`;
-  }
-  if (Array.isArray(prod.sizes) && prod.sizes.length) {
-    sizeOptions = `<label>Size:</label><select id="cartSize">${prod.sizes.map(s=>`<option value="${s}">${s}</option>`).join('')}</select>`;
-  }
-  document.getElementById('cartSelectModal').innerHTML = `
-    <h3>${prod.name}</h3>
-    <img src="${(prod.images && prod.images[0])||prod.img||'https://via.placeholder.com/170x170?text=No+Image'}" alt="${prod.name}" style="width:120px;border-radius:8px;margin-bottom:1em;">
-    <div style="margin-bottom:1em;">${colorOptions} ${sizeOptions}</div>
-    <button id="confirmAddToCartBtn">Add to Cart</button>
-    <button id="closeCartSelect" class="close-modal-btn" style="position:absolute;top:10px;right:10px;font-size:1.5rem;">&times;</button>
-  `;
-  document.getElementById('cartSelectBg').style.display = 'flex';
-
-  document.getElementById('closeCartSelect').onclick = () => {
-    document.getElementById('cartSelectBg').style.display = 'none';
-  };
-  document.getElementById('confirmAddToCartBtn').onclick = async () => {
-    const chosenColor = document.getElementById('cartColor') ? document.getElementById('cartColor').value : undefined;
-    const chosenSize = document.getElementById('cartSize') ? document.getElementById('cartSize').value : undefined;
-    await addToCartStatic(prodId, chosenColor, chosenSize);
-    document.getElementById('cartSelectBg').style.display = 'none';
-  };
-}
-
-// ADD TO CART -- FIRESTORE ONLY, handle missing color/size
-async function addToCartStatic(id, color, size) {
-  if (!localStorage.getItem('email')) {
-    showAuthModal('login');
-    return;
-  }
-  if (isAdminUser()) {
-    alert("Admins cannot shop as customers.");
-    return;
-  }
-  const prodDoc = await getDoc(doc(db, "products", id));
-  if (!prodDoc.exists()) return;
-  const prod = prodDoc.data();
-  const name = prod.name || '';
-  const price = parseFloat(prod.price);
-
-  let cart = await getCart();
-  const idx = cart.findIndex(item =>
-    item.id == id &&
-    (item.color == color || (!item.color && !color)) &&
-    (item.size == size || (!item.size && !size))
-  );
-  let cartItem = { id, name, price, qty: 1 };
-  if (color) cartItem.color = color;
-  if (size) cartItem.size = size;
-  if (idx > -1) {
-    cart[idx].qty = (cart[idx].qty || 1) + 1;
-  } else {
-    cart.push(cartItem);
-  }
-  await setCart(cart);
-  alert(`${name} added to cart!`);
-  updateAccountBar();
-}
-
-// PRODUCT FILTERING
-function renderProducts() {
-  const category = document.getElementById('categoryFilter').value;
-  const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-  const cards = Array.from(document.querySelectorAll('.products-grid .product-card'));
-  cards.forEach(card => {
-    const matchesCategory = !category || card.dataset.category === category;
-    const matchesSearch = !searchTerm || 
-      (card.dataset.name && card.dataset.name.toLowerCase().includes(searchTerm)) ||
-      (card.querySelector('p') && card.querySelector('p').textContent.toLowerCase().includes(searchTerm));
-    card.style.display = (matchesCategory && matchesSearch) ? "" : "none";
-  });
-}
-document.getElementById('categoryFilter').addEventListener('change', renderProducts);
-document.getElementById('searchInput').addEventListener('input', renderProducts);
-
-// PRODUCT BUTTON HANDLERS
-function setupAddToCartButtons() {
-  document.querySelectorAll('.product-card .add-to-cart-btn').forEach(btn => {
-    btn.onclick = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      const card = this.closest('.product-card');
-      if (card) {
-        showCartSelectModal(card.getAttribute('data-id'));
-      }
-    };
-  });
-}
-setupAddToCartButtons();
-
-window.addEventListener('keydown', function(e){
-  if (e.key === "Escape") {
-    document.getElementById('modalBg').style.display = 'none';
-    document.getElementById('addProductBg').style.display = 'none';
-    document.getElementById('cartSelectBg').style.display = 'none';
-  }
-});
-// Prevent back navigation and always redirect to index.html
-history.pushState(null, '', location.href);
-window.addEventListener('popstate', function(event) {
-  window.location.href = 'index.html';
-});
-
-// --- ADMIN ADD PRODUCT LOGIC ---
-const addProductBg = document.getElementById('addProductBg');
-const addProductModal = document.getElementById('addProductModal');
-
-function maybeShowAddProductBtn() {
-  if (isAdminUser()) {
-    let btn = document.getElementById('addProductBtn');
-    if (!btn) {
-      btn = document.createElement('button');
-      btn.textContent = '➕ Add Product';
-      btn.id = 'addProductBtn';
-      btn.style = 'position:fixed;bottom:22px;right:22px;z-index:101;font-size:1.1rem;padding:1rem 1.5rem;background:#3574e7;color:#fff;border:none;border-radius:8px;box-shadow:0 2px 8px #2225;cursor:pointer;';
-      btn.onclick = showAddProductModal;
-      document.body.appendChild(btn);
-    }
-  } else {
-    const btn = document.getElementById('addProductBtn');
-    if (btn) btn.remove();
-  }
-}
-window.maybeShowAddProductBtn = maybeShowAddProductBtn;
-
-// Show modal to add product (with ID, images, color, and size - both optional)
-function showAddProductModal() {
-  addProductModal.innerHTML = `
-    <h3>Add New Product</h3>
-    <form id="productForm">
-      <input required placeholder="Product ID (must be unique)" id="prodId">
-      <input required placeholder="Product Name" id="prodName">
-      <input required placeholder="Category" id="prodCat">
-      <input required placeholder="Price (ZMW)" id="prodPrice" type="number" min="0">
-      <input placeholder="Tag/Short Text" id="prodTag">
-      <textarea placeholder="Image URLs (one per line or comma separated)" id="prodImgs"></textarea>
-      <input placeholder="Colors (comma or line separated, e.g. Red,Blue,Gold)" id="prodColors">
-      <input placeholder="Sizes (comma or line separated, e.g. S,M,L,One Size)" id="prodSizes">
-      <button type="submit">Add Product</button>
-    </form>
-    <button id="closeAddProduct" class="close-modal-btn">&times;</button>
-  `;
-  addProductBg.style.display = 'flex';
-  document.getElementById('closeAddProduct').onclick = () => { addProductBg.style.display = 'none'; };
-  document.getElementById('productForm').onsubmit = async function(e){
-    e.preventDefault();
-    const id = document.getElementById('prodId').value.trim();
-    const name = document.getElementById('prodName').value.trim();
-    const category = document.getElementById('prodCat').value.trim();
-    const price = parseFloat(document.getElementById('prodPrice').value);
-    const tag = document.getElementById('prodTag').value.trim();
-    const imgsRaw = document.getElementById('prodImgs').value.trim();
-    const images = imgsRaw
-      ? imgsRaw.split(/\n|,/).map(x => x.trim()).filter(Boolean)
-      : ['https://via.placeholder.com/170x170?text=No+Image'];
-
-    const colorsRaw = document.getElementById('prodColors').value.trim();
-    const sizesRaw = document.getElementById('prodSizes').value.trim();
-    const colors = colorsRaw 
-      ? colorsRaw.split(/\s*,\s*|\s*\n\s*/).map(x=>x.trim()).filter(Boolean) 
-      : undefined;
-    const sizes = sizesRaw 
-      ? sizesRaw.split(/\s*,\s*|\s*\n\s*/).map(x=>x.trim()).filter(Boolean) 
-      : undefined;
-
-    let productData = {
-      name,
-      category,
-      price,
-      tag,
-      images,
-      created: serverTimestamp()
-    };
-    if (colors && colors.length) productData.colors = colors;
-    if (sizes && sizes.length) productData.sizes = sizes;
-    try {
-      await setDoc(doc(db, "products", id), productData);
-      alert("Product added!");
-      addProductBg.style.display = 'none';
-      await renderDynamicProducts();
-    } catch (e) {
-      alert("Error adding product: " + (e.message || e));
-    }
-  };
-}
-
-// Helper: randomly assign round or square for demo (you can use your field for real)
-function getRandomShapeForProduct(name, idx) {
-  if (/round|circle|hoop/i.test(name)) return "round";
-  return (idx % 4 === 0) ? "round" : "square";
-}
-
-// ---- DYNAMIC PRODUCT RENDER WITH SHAPE SUPPORT ----
-async function renderDynamicProducts() {
-  const q = query(collection(db, "products"), orderBy("created", "desc"));
-  const querySnapshot = await getDocs(q);
-  let grid = document.getElementById("dynamic-products-row");
-  if (!grid) {
-    grid = document.createElement("div");
-    grid.className = "products-grid";
-    grid.id = "dynamic-products-row";
-    const scroller = document.querySelector('.products-scroller');
-    scroller.prepend(grid);
-  }
-  const prods = [];
-  querySnapshot.forEach(docSnap => prods.push({ id: docSnap.id, ...docSnap.data() }));
-  // Shuffle for demo
-  for (let i = prods.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [prods[i], prods[j]] = [prods[j], prods[i]];
-  }
-  grid.innerHTML = "";
-  prods.forEach((d, idx) => {
-    let card = document.createElement("a");
-    card.className = "product-card";
-    card.setAttribute("data-id", d.id);
-    card.setAttribute("data-category", d.category);
-    card.setAttribute("data-name", d.name);
-    card.setAttribute("data-price", d.price);
-
-    // Determine shape
-    let shape = "square";
-    if (d.shape === "round" || d.shape === "circle") shape = "round";
-    else if (/round|circle|hoop/i.test(d.name || "") || /round|circle|hoop/i.test(d.tag || "")) shape = "round";
-    else shape = getRandomShapeForProduct(d.name || "", idx);
-    card.setAttribute("data-shape", shape);
-
-    let isHotDeal = d.hotDeal === true || /hot deal|exclusive|special/i.test(d.tag || "") || (idx % 7 === 0);
-    card.href = `product.html?id=${d.id}`;
-    let imgUrl = Array.isArray(d.images) && d.images.length ? d.images[0] : (d.img || 'https://via.placeholder.com/170x170?text=No+Image');
-    card.innerHTML = `
-      <img src="${imgUrl}" alt="${d.name}" onerror="this.onerror=null;this.src='https://via.placeholder.com/170x170?text=No+Image';"/>
-      <h3>${d.name || ""}${isHotDeal ? ' <span style="color:#e96c00;font-size:0.8em;">🔥</span>' : ''}</h3>
-      <p>${d.tag||""}</p>
-      <div class="price">ZMW ${d.price}</div>
-      <button class="add-to-cart-btn">Add to Cart</button>
-    `;
-    grid.appendChild(card);
-  });
-  setupAddToCartButtons();
-  renderProducts();
-  setCartButtonStates();
-}
-
-// Auth state -- update UI on change
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    localStorage.setItem('email', user.email);
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (userDoc.exists()) {
-      localStorage.setItem('name', userDoc.data().name || user.email);
-      localStorage.setItem('phone', userDoc.data().phone || "");
-    }
-    await updateAccountBar();
-  } else {
-    localStorage.removeItem('email');
-    localStorage.removeItem('name');
-    localStorage.removeItem('phone');
-    await updateAccountBar();
-  }
-  setCartButtonStates();
-  maybeShowAddProductBtn();
-  renderDynamicProducts();
-});
-
-// On load, always show if admin
-maybeShowAddProductBtn();
-renderDynamicProducts();
-updateAccountBar();
-setCartButtonStates();
-renderProducts();
- // Inactivity timeout
-        let inactivityTimeout;
-        function resetInactivityTimeout() {
-            clearTimeout(inactivityTimeout);
-            inactivityTimeout = setTimeout(() => {
-                logout();
-            }, 600000); // 10 minutes
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MergSignature | Premium Jewelry</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        // Set up inactivity timer
-        resetInactivityTimeout();
-        document.addEventListener('mousemove', resetInactivityTimeout);
-        document.addEventListener('keypress', resetInactivityTimeout);
-        document.addEventListener('click', resetInactivityTimeout);
-        document.addEventListener('touchstart', resetInactivityTimeout);
+        :root {
+            --primary-color: #f8f0e9;
+            --secondary-color: #d4af37;
+            --accent-color: #a67c52;
+            --dark-color: #333;
+            --light-color: #fff;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
 
-        // Disable right-click context menu
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-        });
+        body {
+            background-color: #f5f5f5;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
 
-        // Disable specific keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            if ((e.ctrlKey && (e.key === 'u' || e.key === 's' || e.key === 'a' || e.key === 'c')) || e.key === 'F12') {
-                e.preventDefault();
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--dark-color);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .site-title {
+            color: var(--light-color);
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .site-title span {
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        .admin-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .admin-link:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Main Content */
+        .page-title {
+            text-align: center;
+            padding: 40px 0;
+            color: var(--dark-color);
+        }
+
+        .page-title h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .page-title p {
+            font-size: 18px;
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 30px 0;
+            padding: 0 20px;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background-color: var(--light-color);
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            border-color: var(--secondary-color);
+        }
+
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+            min-height: 400px;
+        }
+
+        .product-card {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-img {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .product-info {
+            padding: 20px;
+        }
+
+        .product-category {
+            color: var(--accent-color);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .product-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .product-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .product-price {
+            color: var(--secondary-color);
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* Product Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .product-modal {
+            background-color: var(--light-color);
+            border-radius: 15px;
+            width: 100%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (min-width: 768px) {
+            .product-modal {
+                flex-direction: row;
+            }
+        }
+
+        .modal-image {
+            flex: 1;
+            min-height: 300px;
+            overflow: hidden;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .modal-content {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-category {
+            color: var(--accent-color);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .modal-description {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .modal-price {
+            color: var(--secondary-color);
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .modal-stock {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .modal-stock.in-stock {
+            color: var(--success-color);
+        }
+
+        .modal-stock.low-stock {
+            color: var(--warning-color);
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background-color: #25D366;
+            color: var(--light-color);
+            padding: 15px 25px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            margin-top: auto;
+        }
+
+        .whatsapp-btn:hover {
+            background-color: #128C7E;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: var(--light-color);
+            font-size: 28px;
+            cursor: pointer;
+            z-index: 10001;
+        }
+
+        /* Empty State */
+        .no-products {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #777;
+        }
+
+        .no-products i {
+            font-size: 60px;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .footer-section h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+
+        .footer-section p {
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: #444;
+            color: var(--light-color);
+            border-radius: 50%;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .social-icons a:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* WhatsApp Float Button */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #25D366;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+            z-index: 1000;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .whatsapp-float:hover {
+            background-color: #128C7E;
+            transform: scale(1.1);
+        }
+
+        /* Loading */
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--secondary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .admin-link {
+                display: none;
+            }
+            
+            .admin-link-mobile {
+                display: block;
+                width: 100%;
+                text-align: center;
+                margin-top: 15px;
+            }
+            
+            .page-title h1 {
+                font-size: 32px;
+            }
+            
+            .page-title p {
+                font-size: 16px;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            .modal-content {
+                padding: 20px;
+            }
+            
+            .modal-title {
+                font-size: 24px;
+            }
+            
+            .modal-price {
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .tab-btn {
+                flex-shrink: 0;
+            }
+            
+            .whatsapp-float {
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+        }
+
+        .admin-link-mobile {
+            display: none;
+        }
+        
+        /* Success Color */
+        :root {
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="site-title">Merg<span>Signature</span></div>
+                
+                <a href="admin.html" class="admin-link">
+                    <i class="fas fa-user-cog"></i> Admin Panel
+                </a>
+                
+                <a href="admin.html" class="admin-link-mobile">
+                    <i class="fas fa-user-cog"></i> Admin Panel
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Page Title -->
+        <div class="page-title">
+            <h1>Premium Jewelry Collection</h1>
+            <p>Discover our exclusive collection of fine jewelry pieces, each crafted with precision and elegance.</p>
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="tabs" id="categoryTabs">
+            <button class="tab-btn active" data-category="all">All Collections</button>
+            <button class="tab-btn" data-category="rings">Rings</button>
+            <button class="tab-btn" data-category="necklaces">Necklaces</button>
+            <button class="tab-btn" data-category="bracelets">Bracelets</button>
+            <button class="tab-btn" data-category="earrings">Earrings</button>
+            <button class="tab-btn" data-category="watches">Watches</button>
+        </div>
+
+        <!-- Products Grid -->
+        <div id="products">
+            <div class="products-grid" id="productsGrid">
+                <!-- Loading State -->
+                <div class="loading">
+                    <div class="loader"></div>
+                    <p>Loading jewelry collections...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Product Detail Modal -->
+    <div class="modal-overlay" id="productModal">
+        <button class="close-modal" id="closeModal">&times;</button>
+        <div class="product-modal">
+            <div class="modal-image">
+                <img id="modalImage" src="" alt="Product Image">
+            </div>
+            <div class="modal-content">
+                <div class="modal-category" id="modalCategory">Category</div>
+                <h2 class="modal-title" id="modalTitle">Product Title</h2>
+                <p class="modal-description" id="modalDescription">Product description will appear here...</p>
+                <div class="modal-price" id="modalPrice">ZMW 0</div>
+                <div class="modal-stock in-stock" id="modalStock">Available</div>
+                <a href="#" class="whatsapp-btn" id="whatsappInquiry" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Inquire on WhatsApp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- WhatsApp Float Button -->
+    <a href="https://wa.me/260777290456" class="whatsapp-float" target="_blank">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>MergSignature</h3>
+                    <p>Premium jewelry collection for the discerning individual. Quality and elegance in every piece.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Lusaka, Zambia</p>
+                    <p><i class="fas fa-phone"></i> +260 777 290 456</p>
+                    <p><i class="fas fa-envelope"></i> info@mergsignature.com</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Business Hours</h3>
+                    <p>Monday - Friday: 9am - 6pm</p>
+                    <p>Saturday: 10am - 4pm</p>
+                    <p>Sunday: Appointment Only</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 MergSignature Jewelry. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase and App Scripts -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXuxaO1WKLAWGVLXcVb2Q6XX_UGcTKPo0",
+            authDomain: "merg-online-store.firebaseapp.com",
+            projectId: "merg-online-store",
+            storageBucket: "merg-online-store.appspot.com",
+            messagingSenderId: "1096457005407",
+            appId: "1:1096457005407:web:64fb56790dad61b962aeea",
+            measurementId: "G-V6WM36V9BD"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const itemsCollection = collection(db, "jewelryItems");
+
+        // DOM Elements
+        const productsGrid = document.getElementById('productsGrid');
+        const categoryTabs = document.getElementById('categoryTabs');
+        const productModal = document.getElementById('productModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalImage = document.getElementById('modalImage');
+        const modalCategory = document.getElementById('modalCategory');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalDescription = document.getElementById('modalDescription');
+        const modalPrice = document.getElementById('modalPrice');
+        const modalStock = document.getElementById('modalStock');
+        const whatsappInquiry = document.getElementById('whatsappInquiry');
+
+        // Current category filter
+        let currentCategory = 'all';
+        let currentProducts = [];
+
+        // Load and display items from Firebase
+        function loadItems() {
+            onSnapshot(itemsCollection, (snapshot) => {
+                productsGrid.innerHTML = '';
+                currentProducts = [];
+                
+                if (snapshot.empty) {
+                    productsGrid.innerHTML = `
+                        <div class="no-products">
+                            <i class="fas fa-gem"></i>
+                            <h3>No jewelry items found</h3>
+                            <p>Check back soon for our latest collections</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Convert snapshot to array
+                snapshot.docs.forEach((doc) => {
+                    const item = doc.data();
+                    item.id = doc.id;
+                    currentProducts.push(item);
+                });
+                
+                // Sort by creation date (newest first)
+                currentProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                displayProducts(currentProducts);
+            });
+        }
+
+        // Display products with filter
+        function displayProducts(products) {
+            productsGrid.innerHTML = '';
+            
+            let hasVisibleItems = false;
+            
+            products.forEach((item) => {
+                // Apply category filter
+                if (currentCategory !== 'all' && item.category !== currentCategory) {
+                    return;
+                }
+                
+                hasVisibleItems = true;
+                
+                // Create product card
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+                
+                // Handle image errors
+                const imgErrorHandler = `this.onerror=null; this.src='https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop'`;
+                
+                productCard.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" class="product-img" onerror="${imgErrorHandler}">
+                    <div class="product-info">
+                        <div class="product-category">${item.category ? item.category.toUpperCase() : 'JEWELRY'}</div>
+                        <h3 class="product-title">${item.name}</h3>
+                        <p class="product-description">${item.description}</p>
+                        <div class="product-price">ZMW ${item.price ? item.price.toLocaleString() : '0'}</div>
+                    </div>
+                `;
+                
+                // Add click event to open modal
+                productCard.addEventListener('click', () => openProductModal(item));
+                
+                productsGrid.appendChild(productCard);
+            });
+            
+            // If no items match filter, show message
+            if (!hasVisibleItems) {
+                productsGrid.innerHTML = `
+                    <div class="no-products">
+                        <i class="fas fa-search"></i>
+                        <h3>No ${currentCategory} found</h3>
+                        <p>Try another category or check back soon</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Open product modal
+        function openProductModal(product) {
+            // Set modal content
+            modalImage.src = product.image;
+            modalImage.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop';
+            };
+            
+            modalCategory.textContent = product.category ? product.category.toUpperCase() : 'JEWELRY';
+            modalTitle.textContent = product.name;
+            modalDescription.textContent = product.description;
+            modalPrice.textContent = `ZMW ${product.price ? product.price.toLocaleString() : '0'}`;
+            
+            // Set stock status
+            if (product.stock > 10) {
+                modalStock.textContent = `In Stock (${product.stock} available)`;
+                modalStock.className = 'modal-stock in-stock';
+            } else if (product.stock > 0) {
+                modalStock.textContent = `Low Stock (${product.stock} left)`;
+                modalStock.className = 'modal-stock low-stock';
+            } else {
+                modalStock.textContent = 'Out of Stock';
+                modalStock.className = 'modal-stock';
+            }
+            
+            // Create WhatsApp message
+            const whatsappMessage = `Hello MergSignature! I'm interested in this product:\n\n*${product.name}*\nCategory: ${product.category}\nPrice: ZMW ${product.price}\n\nCan you tell me more about this item?`;
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            whatsappInquiry.href = `https://wa.me/260777290456?text=${encodedMessage}`;
+            
+            // Show modal
+            productModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal
+        function closeProductModal() {
+            productModal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Category tab filtering
+        categoryTabs.addEventListener('click', function(e) {
+            if (e.target.classList.contains('tab-btn')) {
+                // Update active tab
+                document.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                e.target.classList.add('active');
+                
+                // Update current category and reload items
+                currentCategory = e.target.getAttribute('data-category');
+                
+                // Clear and show loading state
+                productsGrid.innerHTML = `
+                    <div class="loading">
+                        <div class="loader"></div>
+                        <p>Loading ${currentCategory === 'all' ? 'all collections' : currentCategory}...</p>
+                    </div>
+                `;
+                
+                // Filter products with slight delay for better UX
+                setTimeout(() => {
+                    displayProducts(currentProducts);
+                }, 300);
             }
         });
 
-</script>
+        // Close modal events
+        closeModal.addEventListener('click', closeProductModal);
+        productModal.addEventListener('click', (e) => {
+            if (e.target === productModal) {
+                closeProductModal();
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && productModal.classList.contains('active')) {
+                closeProductModal();
+            }
+        });
+
+        // Initialize the app
+        loadItems();
+    </script>
 </body>
 </html>
