@@ -1,644 +1,994 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Admin Dashboard - MergSignature Jewelry</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #92a5b8;
-      margin: 0;
-      color: #222;
-    }
-    header {
-      background: #1d2636;
-      color: #fff;
-      padding: 1.2rem 2rem;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .header-title {
-      margin: 0;
-      font-size: 1.4rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-      flex: 1;
-    }
-    .nav-links {
-      display: flex;
-      gap: 1.2em;
-      align-items: center;
-    }
-    .nav-link, .logout-btn {
-      background: #3574e7;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      padding: 0.45rem 1.1rem;
-      cursor: pointer;
-      font-size: 1rem;
-      font-weight: 500;
-      text-decoration: none;
-      transition: background 0.18s;
-    }
-    .nav-link.active, .nav-link:hover {
-      background: #1d2636;
-      color: #ffffff;
-    }
-    .logout-btn {
-      background: #b1b1b1;
-      margin-left: 1.2em;
-    }
-    .nav-link-badge {
-      position: relative;
-      display: inline-block;
-    }
-    .notif-dot, .notif-num {
-      position: absolute;
-      top: 2px;
-      right: 2px;
-      background: #e74c3c;
-      color: #fff;
-      font-size: 11px;
-      min-width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      border: 2px solid #fff;
-      z-index: 2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      box-shadow: 0 0 4px #e74c3c33;
-      padding: 0 3px;
-      transition: scale 0.2s;
-      animation: notif-pop 0.5s;
-    }
-    @keyframes notif-pop {
-      0% { transform: scale(0.7);}
-      70% { transform: scale(1.25);}
-      100% { transform: scale(1);}
-    }
-    .toast {
-      display: none;
-      position: fixed;
-      bottom: 38px;
-      right: 24px;
-      background: #3574e7;
-      color: #fff;
-      padding: 1em 2em;
-      border-radius: 9px;
-      box-shadow: 0 2px 16px #2222;
-      z-index: 1001;
-      font-size: 1.08em;
-      font-weight: 500;
-      animation: toast-in 0.4s;
-    }
-    @keyframes toast-in {
-      from { opacity: 0; transform: translateY(40px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-    .container {
-      max-width: 96vw;
-      margin: 1rem auto 2rem auto;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.07);
-      padding: 1.2rem 0.5rem 1.5rem 0.5rem;
-    }
-    h2 {
-      margin-top: 0;
-      color: #1d2636;
-      font-size: 1.25rem;
-      letter-spacing: 1px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1.2rem 0 0.7rem 0;
-      background: #f9fafc;
-      font-size: 0.92rem;
-      min-width: 600px;
-    }
-    th, td {
-      border: 1px solid #ececec;
-      padding: 0.23rem 0.38rem;
-      text-align: left;
-      vertical-align: top;
-      font-size: 0.92rem;
-    }
-    th {
-      background: #e3e9f1;
-      font-size: 0.96rem;
-      font-weight: 600;
-      color: #1d2636;
-      padding: 0.34rem 0.38rem;
-    }
-    tr:nth-child(even) { background: #f4f7fb; }
-    tr:nth-child(odd) { background: #fff; }
-    .action-btn {
-      background: #3574e7;
-      color: #fff;
-      padding: 0.33rem 0.8rem;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.93rem;
-      font-weight: 500;
-      cursor: pointer;
-      margin-bottom: 3px;
-      margin-top: 2px;
-      transition: background 0.2s;
-      box-shadow: 0 1px 2px #eee;
-      outline: none;
-      min-width: 90px;
-    }
-    .action-btn[disabled], .action-btn.disabled {
-      background: #bbb;
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-    .back-link {
-      display: inline-block;
-      margin-bottom: 1.4rem;
-      color: #3574e7;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 1.02rem;
-    }
-    .admin-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.1rem;
-      gap: 1rem;
-    }
-    .status-badge {
-      display: inline-block;
-      padding: 0.23em 0.6em;
-      border-radius: 13px;
-      font-size: 0.9em;
-      font-weight: 600;
-      background: #eee;
-      color: #222;
-      min-width: 70px;
-      text-align: center;
-      border: 1px solid #eee;
-    }
-    .status-pending { background: #f1c40f; color: #fff; border-color: #f1c40f;}
-    .status-paid { background: #2ecc40; color: #fff; border-color: #2ecc40;}
-    .status-verified { background: #3574e7; color: #fff; border-color: #3574e7;}
-    .status-delivered { background: #8e44ad; color: #fff; border-color: #8e44ad;}
-    .status-closed { background: #333; color: #fff; border-color: #222;}
-    .order-details-list {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-    .order-details-list li {
-      margin-bottom: 2px;
-      font-size: 0.97em;
-    }
-    .no-orders {
-      color: #999;
-      text-align: center;
-      font-size: 1.08rem;
-      margin: 2.5em 0;
-    }
-    .filter-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8em;
-      align-items: center;
-      margin-bottom: 1.2rem;
-      font-size: 0.98em;
-      padding-left: 0.5em;
-    }
-    .filter-bar label { font-weight: 600; }
-    .filter-bar input[type="date"],
-    .filter-bar select {
-      padding: 0.35em 0.6em;
-      border-radius: 7px;
-      border: 1px solid #c6c6c6;
-      font-size: 0.97em;
-      background: #fafbfc;
-      min-width: 110px;
-    }
-    .filter-bar button {
-      font-size: 0.98em;
-      font-weight: 500;
-    }
-    @media (max-width: 900px) {
-      .container { padding: 0.5rem 0.2rem 1.2rem 0.2rem; }
-      table { min-width: 400px; }
-      th, td { font-size: 0.91rem; }
-      .action-btn { min-width: 80px; font-size: 0.91rem;}
-    }
-    @media (max-width: 600px) {
-      table, thead, tbody, th, td, tr { display: block; }
-      th { position: absolute; left: -9999px;}
-      tr { margin-bottom: 1rem; border-bottom: 2px solid #eee; background: #fff;}
-      td { border: none; position: relative; padding-left: 45%; min-height: 34px;}
-      td:before { position: absolute; left: 10px; top: 12px; width: 44%; white-space: nowrap; font-weight:bold;}
-      td:nth-of-type(1):before { content: "Date"; }
-      td:nth-of-type(2):before { content: "Order ID"; }
-      td:nth-of-type(3):before { content: "Customer"; }
-      td:nth-of-type(4):before { content: "Delivery"; }
-      td:nth-of-type(5):before { content: "Items"; }
-      td:nth-of-type(6):before { content: "Total"; }
-      td:nth-of-type(7):before { content: "Status"; }
-      td:nth-of-type(8):before { content: "TID"; }
-      td:nth-of-type(9):before { content: "Review"; }
-      td:nth-of-type(10):before { content: "Action"; }
-      .filter-bar { gap: 0.3em; }
-    }
-    @media (max-width:600px) {
-      .toast { left: 5vw; right: 5vw; font-size: 1em; padding: 0.8em 1em;}
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | MergSignature Jewelry</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #f5f5f5;
+            --secondary-color: #d4af37;
+            --accent-color: #a67c52;
+            --dark-color: #333;
+            --light-color: #fff;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            background-color: var(--primary-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            padding: 15px 0;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--light-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: var(--secondary-color);
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .logo span {
+            color: var(--secondary-color);
+            font-weight: 700;
+        }
+
+        .view-site-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .view-site-link:hover {
+            background-color: var(--accent-color);
+        }
+
+        .admin-title {
+            text-align: center;
+            margin: 30px 0;
+            color: var(--accent-color);
+        }
+
+        .admin-title h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .admin-title p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Main Layout */
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 992px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar */
+        .admin-sidebar {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            height: fit-content;
+        }
+
+        .admin-sidebar h3 {
+            color: var(--accent-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background-color: var(--primary-color);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--secondary-color);
+            display: block;
+            line-height: 1;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 15px;
+            background-color: var(--primary-color);
+            border-radius: 5px;
+            text-decoration: none;
+            color: var(--dark-color);
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .panel-header h3 {
+            color: var(--accent-color);
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: var(--light-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-color);
+        }
+
+        .btn-secondary {
+            background-color: #f0f0f0;
+            color: var(--dark-color);
+            border: 1px solid #ddd;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: var(--light-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: var(--light-color);
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Image Upload */
+        .image-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--secondary-color);
+            background-color: rgba(212, 175, 55, 0.05);
+        }
+
+        .image-upload-area.dragover {
+            border-color: var(--secondary-color);
+            background-color: rgba(212, 175, 55, 0.1);
+        }
+
+        .image-upload-icon {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .image-upload-text h4 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+        }
+
+        .image-upload-text p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .image-preview {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .image-preview.active {
+            display: block;
+        }
+
+        /* Items List */
+        .items-list {
+            margin-top: 40px;
+        }
+
+        .items-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .item-card {
+            background-color: var(--light-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid #eee;
+        }
+
+        .item-card-img {
+            height: 180px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .item-card-body {
+            padding: 20px;
+        }
+
+        .item-card-category {
+            color: var(--accent-color);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .item-card-title {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .item-card-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .item-card-price {
+            color: var(--secondary-color);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .item-card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .no-items {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px 20px;
+            color: #777;
+        }
+
+        .no-items i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        /* Messages */
+        .message {
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            display: none;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .message.info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .admin-title h2 {
+                font-size: 26px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .items-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .panel-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <span class="header-title">MergSignature Jewelry</span>
-    <div class="nav-links">
-      <span class="nav-link-badge" style="position:relative;">
-        <a href="#" class="nav-link active" id="ordersNav">Orders</a>
-        <span id="notifOrders" class="notif-num" style="display:none"></span>
-      </span>
-      <span class="nav-link-badge" style="position:relative;">
-        <a href="messages.html" class="nav-link" id="messagesNav">Messages</a>
-        <span id="notifMessages" class="notif-num" style="display:none"></span>
-      </span>
-      <span class="nav-link-badge" style="position:relative;">
-        <a href="users.html" class="nav-link" id="usersNav">Registered Users</a>
-        <span id="notifUsers" class="notif-num" style="display:none"></span>
-      </span>
-      <button class="logout-btn" id="logoutBtn">Logout</button>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="index.html" class="logo">
+                    <i class="fas fa-gem"></i>
+                    <h1>Merg<span>Signature</span> Admin</h1>
+                </a>
+                
+                <a href="index.html" class="view-site-link">
+                    <i class="fas fa-eye"></i> View Site
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Admin Title -->
+    <div class="container">
+        <div class="admin-title">
+            <h2><i class="fas fa-user-cog"></i> Jewelry Management Panel</h2>
+            <p>Add, edit, and manage your jewelry collection</p>
+        </div>
     </div>
-  </header>
-  <div id="toast" class="toast"></div>
-  <div class="container">
-    <div id="ordersPanel">
-      <div class="admin-bar">
-        <a href="index.html" class="back-link">&larr; Back to Shop</a>
-        <h2>Admin Dashboard</h2>
-      </div>
-      <div class="filter-bar">
-        <label for="statusFilter">Status:</label>
-        <select id="statusFilter">
-          <option value="">All</option>
-          <option value="pending">Pending</option>
-          <option value="paid">Paid</option>
-          <option value="verified">Verified</option>
-          <option value="delivered">Delivered</option>
-          <option value="closed">Closed</option>
-        </select>
-        <label for="filterDate">Date:</label>
-        <input type="date" id="filterDate">
-        <button id="clearFilters" style="margin-left:10px;padding:0.4em 1em;border-radius:5px;border:none;background:#eee;">Clear</button>
-      </div>
-      <div id="ordersSection"></div>
-    </div>
-  </div>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
-  import { getFirestore, collection, getDocs, getDoc, setDoc, doc, updateDoc, query, where, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
-  const firebaseConfig = {
-    apiKey: "AIzaSyDXuxaO1WKLAWGVLXcVb2Q6XX_UGcTKPo0",
-    authDomain: "merg-online-store.firebaseapp.com",
-    projectId: "merg-online-store",
-    storageBucket: "merg-online-store.appspot.com",
-    messagingSenderId: "1096457005407",
-    appId: "1:1096457005407:web:64fb56790dad61b962aeea",
-    measurementId: "G-V6WM36V9BD"
-  };
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
 
-  // --- NOTIFICATION BADGES LOGIC ---
-  function showBadge(elem, count) {
-    if (count > 0) {
-      elem.textContent = count > 99 ? "99+" : count;
-      elem.style.display = "";
-    } else {
-      elem.style.display = "none";
-    }
-  }
+    <!-- Main Layout -->
+    <main class="container">
+        <div class="admin-layout">
+            <!-- Sidebar -->
+            <aside class="admin-sidebar">
+                <h3><i class="fas fa-chart-bar"></i> Dashboard</h3>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="number" id="totalItems">0</span>
+                        <span class="label">Total Items</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number" id="totalCategories">0</span>
+                        <span class="label">Categories</span>
+                    </div>
+                </div>
+                
+                <ul class="sidebar-menu">
+                    <li><a href="#add-item" class="active"><i class="fas fa-plus-circle"></i> Add New Item</a></li>
+                    <li><a href="#manage-items"><i class="fas fa-list"></i> Manage Items</a></li>
+                    <li><a href="#upload-images"><i class="fas fa-images"></i> Image Gallery</a></li>
+                    <li><a href="#settings"><i class="fas fa-cog"></i> Settings</a></li>
+                </ul>
+            </aside>
 
-  // --- Helper for order notifications: localStorage timestamp
-  function getLastSeenOrdersTime() {
-    return Number(localStorage.getItem('lastSeenOrdersTS') || 0);
-  }
-  function setLastSeenOrdersTime(ts) {
-    localStorage.setItem('lastSeenOrdersTS', String(ts));
-  }
+            <!-- Main Panel -->
+            <div class="admin-panel">
+                <!-- Add Item Form -->
+                <div class="panel-header">
+                    <h3><i class="fas fa-plus-circle"></i> Add New Jewelry Item</h3>
+                </div>
+                
+                <!-- Message Area -->
+                <div id="messageArea"></div>
+                
+                <form id="addItemForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="itemName">Jewelry Name *</label>
+                            <input type="text" id="itemName" class="form-control" placeholder="e.g., Diamond Solitaire Ring" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="itemCategory">Category *</label>
+                            <select id="itemCategory" class="form-control" required>
+                                <option value="">Select a category</option>
+                                <option value="rings">Rings</option>
+                                <option value="necklaces">Necklaces</option>
+                                <option value="bracelets">Bracelets</option>
+                                <option value="earrings">Earrings</option>
+                                <option value="watches">Watches</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="itemDescription">Description *</label>
+                        <textarea id="itemDescription" class="form-control" placeholder="Describe the jewelry piece, materials used, design features, etc." required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="itemPrice">Price (ZMW) *</label>
+                            <input type="number" id="itemPrice" class="form-control" placeholder="e.g., 2500" min="0" step="0.01" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="itemStock">Stock Quantity *</label>
+                            <input type="number" id="itemStock" class="form-control" placeholder="e.g., 10" min="0" value="1" required>
+                        </div>
+                    </div>
+                    
+                    <!-- Image Upload -->
+                    <div class="form-group">
+                        <label>Product Image *</label>
+                        
+                        <!-- Option 1: Direct URL Input (Easiest) -->
+                        <div class="form-group">
+                            <label for="imageUrl">Image URL (Recommended)</label>
+                            <input type="url" id="imageUrl" class="form-control" placeholder="Paste image URL from Unsplash or other source">
+                            <small style="color: #666; display: block; margin-top: 5px;">
+                                <strong>Tip:</strong> Use Unsplash links like: 
+                                <code style="font-size: 12px;">https://images.unsplash.com/photo-1594576722512-582d5577dc56</code>
+                            </small>
+                        </div>
+                        
+                        <div style="text-align: center; margin: 15px 0; color: #666; font-weight: 500;">OR</div>
+                        
+                        <!-- Option 2: File Upload -->
+                        <div class="image-upload-area" id="imageUploadArea">
+                            <div class="image-upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="image-upload-text">
+                                <h4>Upload Jewelry Image</h4>
+                                <p>Click to browse or drag & drop image here</p>
+                                <p class="btn btn-secondary">
+                                    <i class="fas fa-folder-open"></i> Browse Files
+                                </p>
+                                <p style="font-size: 14px; color: #999;">JPG, PNG, or WebP (Max: 1MB for demo)</p>
+                            </div>
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                        </div>
+                        
+                        <!-- Image Preview -->
+                        <div class="image-preview" id="imagePreview">
+                            <img id="previewImage" src="" alt="Preview">
+                            <button type="button" class="btn btn-secondary" id="removeImageBtn">
+                                <i class="fas fa-trash"></i> Remove Image
+                            </button>
+                        </div>
+                        
+                        <!-- Hidden field for image URL -->
+                        <input type="hidden" id="itemImage" required>
+                    </div>
+                    
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" id="addItemBtn">
+                            <i class="fas fa-plus-circle"></i> Add Jewelry Item
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="resetFormBtn">
+                            <i class="fas fa-redo"></i> Reset Form
+                        </button>
+                    </div>
+                </form>
+                
+                <!-- Existing Items -->
+                <div class="items-list">
+                    <div class="items-list-header">
+                        <h3><i class="fas fa-list"></i> Existing Items</h3>
+                        <span id="itemsCount">0 items</span>
+                    </div>
+                    
+                    <div class="items-grid" id="itemsGrid">
+                        <!-- Items will be loaded here -->
+                        <div class="no-items">
+                            <i class="fas fa-gem"></i>
+                            <h3>No jewelry items yet</h3>
+                            <p>Add your first item using the form above</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
-  // Orders badge: show count of new/pending orders since last seen
-  function watchOrdersNotif() {
-    const notifOrders = document.getElementById('notifOrders');
-    const ordersCol = collection(db, "orders");
-    onSnapshot(ordersCol, (snap) => {
-      let count = 0;
-      const lastSeen = getLastSeenOrdersTime();
-      let latestOrderTS = lastSeen;
-      snap.forEach(doc => {
-        const data = doc.data();
-        const orderTime = data.date
-          ? (typeof data.date === "object" && data.date.seconds
-              ? data.date.seconds * 1000
-              : new Date(data.date).getTime())
-          : 0;
-        if ((data.status === "pending" || data.status === "paid" || !data.status) && orderTime > lastSeen) {
-          count++;
+    <!-- Firebase and App Scripts -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.9.0/firebase-firestore.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXuxaO1WKLAWGVLXcVb2Q6XX_UGcTKPo0",
+            authDomain: "merg-online-store.firebaseapp.com",
+            projectId: "merg-online-store",
+            storageBucket: "merg-online-store.appspot.com",
+            messagingSenderId: "1096457005407",
+            appId: "1:1096457005407:web:64fb56790dad61b962aeea",
+            measurementId: "G-V6WM36V9BD"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const itemsCollection = collection(db, "jewelryItems");
+
+        // DOM Elements
+        const addItemForm = document.getElementById('addItemForm');
+        const itemsGrid = document.getElementById('itemsGrid');
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImage = document.getElementById('previewImage');
+        const removeImageBtn = document.getElementById('removeImageBtn');
+        const itemImage = document.getElementById('itemImage');
+        const resetFormBtn = document.getElementById('resetFormBtn');
+        const messageArea = document.getElementById('messageArea');
+        const totalItems = document.getElementById('totalItems');
+        const totalCategories = document.getElementById('totalCategories');
+        const itemsCount = document.getElementById('itemsCount');
+        const imageUrlInput = document.getElementById('imageUrl');
+
+        // Variables
+        let selectedImageFile = null;
+        let imagePreviewUrl = null;
+
+        // Load and display items from Firebase
+        function loadItems() {
+            onSnapshot(itemsCollection, (snapshot) => {
+                itemsGrid.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    itemsGrid.innerHTML = `
+                        <div class="no-items">
+                            <i class="fas fa-gem"></i>
+                            <h3>No jewelry items yet</h3>
+                            <p>Add your first item using the form above</p>
+                        </div>
+                    `;
+                    
+                    totalItems.textContent = '0';
+                    itemsCount.textContent = '0 items';
+                    return;
+                }
+                
+                const items = [];
+                const categories = new Set();
+                
+                snapshot.docs.forEach((doc) => {
+                    const item = doc.data();
+                    item.id = doc.id;
+                    items.push(item);
+                    
+                    if (item.category) {
+                        categories.add(item.category);
+                    }
+                });
+                
+                // Sort by creation date (newest first)
+                items.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                // Update stats
+                totalItems.textContent = items.length;
+                totalCategories.textContent = categories.size;
+                itemsCount.textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`;
+                
+                // Display items
+                items.forEach((item) => {
+                    const itemCard = document.createElement('div');
+                    itemCard.className = 'item-card';
+                    itemCard.innerHTML = `
+                        <img src="${item.image}" alt="${item.name}" class="item-card-img" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop'">
+                        <div class="item-card-body">
+                            <div class="item-card-category">${item.category ? item.category.toUpperCase() : 'JEWELRY'}</div>
+                            <h3 class="item-card-title">${item.name}</h3>
+                            <p class="item-card-description">${item.description}</p>
+                            <div class="item-card-price">ZMW ${item.price ? item.price.toLocaleString() : '0'}</div>
+                            <div class="item-card-actions">
+                                <button class="btn btn-secondary delete-item-btn" data-id="${item.id}">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    itemsGrid.appendChild(itemCard);
+                });
+                
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-item-btn').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const itemId = this.getAttribute('data-id');
+                        deleteItem(itemId);
+                    });
+                });
+            });
         }
-        if (orderTime > latestOrderTS) latestOrderTS = orderTime;
-      });
-      notifOrders.dataset.latestts = latestOrderTS; // store for click event
-      showBadge(notifOrders, count);
-    });
-  }
 
-  // Reset Orders badge on click
-  document.getElementById('ordersNav').addEventListener('click', function() {
-    const notifOrders = document.getElementById('notifOrders');
-    const latestTS = Number(notifOrders.dataset.latestts || Date.now());
-    setLastSeenOrdersTime(latestTS);
-    showBadge(notifOrders, 0);
-  });
-
-  // Messages badge: show count of unread messages (not from admin)
-  function watchMessagesNotif() {
-    const notifMessages = document.getElementById('notifMessages');
-    const msgCol = collection(db, "support");
-    onSnapshot(msgCol, (snap) => {
-      let unread = 0;
-      snap.forEach(doc => {
-        const d = doc.data();
-        if (d.sender !== 'admin' && (!d.readByAdmin || d.readByAdmin === false)) {
-          unread++;
+        // Add new item to Firebase
+        async function addItem(name, category, description, price, stock, image) {
+            try {
+                await addDoc(itemsCollection, {
+                    name: name,
+                    category: category,
+                    description: description,
+                    price: parseFloat(price),
+                    stock: parseInt(stock),
+                    image: image,
+                    createdAt: new Date().toISOString()
+                });
+                
+                showMessage('Jewelry item added successfully!', 'success');
+                resetForm();
+                
+            } catch (error) {
+                console.error("Error adding item: ", error);
+                showMessage('Error adding item. Please try again.', 'error');
+            }
         }
-      });
-      showBadge(notifMessages, unread);
-    });
-  }
 
-  // Users badge: show count of users registered in the last 48 hours
-  function watchUsersNotif() {
-    const notifUsers = document.getElementById('notifUsers');
-    const usersCol = collection(db, "users");
-    onSnapshot(usersCol, (snap) => {
-      let count = 0;
-      const now = Date.now();
-      snap.forEach(doc => {
-        const d = doc.data();
-        if (d.createdAt) {
-          const createdAt = typeof d.createdAt === "string" ? new Date(d.createdAt).getTime() : d.createdAt?.toMillis?.() ?? 0;
-          if (createdAt && now - createdAt < 1000 * 60 * 60 * 48) count++;
+        // Delete item from Firebase
+        async function deleteItem(itemId) {
+            if (confirm('Are you sure you want to delete this jewelry item? This action cannot be undone.')) {
+                try {
+                    await deleteDoc(doc(db, "jewelryItems", itemId));
+                    showMessage('Jewelry item deleted successfully!', 'success');
+                } catch (error) {
+                    console.error("Error deleting item: ", error);
+                    showMessage('Error deleting item. Please try again.', 'error');
+                }
+            }
         }
-      });
-      showBadge(notifUsers, count);
-    });
-  }
 
-  // --- Admin Auth Check and setup ---
-  async function getCurrentAdmin() {
-    const email = localStorage.getItem('email');
-    if (!email) return null;
-    if (email === "chris@mergjewelry.com") {
-      return {
-        email: "chris@mergjewelry.com",
-        name: "Chris",
-        isAdmin: true
-      };
-    }
-    const usersCol = collection(db, "users");
-    const snapshot = await getDocs(query(usersCol, where("email", "==", email)));
-    if (!snapshot.docs.length) return null;
-    const user = snapshot.docs[0].data();
-    if (!user || !user.email || !user.name) return null;
-    const adminEmails = [
-      "chris@mergjewelry.com",
-      "admin@mergjewelry.com",
-      "susan@mergjewelry.com"
-    ];
-    if (user.isAdmin === true || adminEmails.includes(user.email)) {
-      return user;
-    }
-    return null;
-  }
-  (async function checkAdmin() {
-    const user = await getCurrentAdmin();
-    if (!user) {
-      alert("Only admins can access this page.");
-      window.location.href = "index.html";
-    }
-  })();
-
-  document.getElementById('logoutBtn').onclick = function() {
-    localStorage.removeItem('email');
-    localStorage.removeItem('name');
-    window.location.href = 'index.html';
-  };
-
-  // --- ORDERS FIRESTORE ---
-  async function getCustomerName(uid, fallback) {
-    if (!uid) return fallback || '';
-    try {
-      const userDoc = await getDoc(doc(db, "users", uid));
-      if (userDoc.exists() && userDoc.data().name) {
-        return userDoc.data().name;
-      }
-    } catch(e) {}
-    return fallback || '';
-  }
-
-  async function getOrders() {
-    const ordersCol = collection(db, "orders");
-    const snapshot = await getDocs(query(ordersCol, orderBy("date", "desc")));
-    return snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-  }
-
-  async function saveOrderStatus(orderId, status) {
-    const orderRef = doc(db, "orders", orderId);
-    await updateDoc(orderRef, { status });
-  }
-
-  // Format as "DD/MM/YYYY,HH:MM:SS AM/PM"
-  function formatDisplayDate(dateField) {
-    let d;
-    if (!dateField) return "";
-    if (typeof dateField === "string" || typeof dateField === "number") {
-      d = new Date(dateField);
-    } else if (typeof dateField === "object" && dateField.seconds) {
-      d = new Date(dateField.seconds * 1000);
-    } else {
-      return "";
-    }
-    if (isNaN(d.getTime())) return "";
-    let day = String(d.getDate()).padStart(2, '0');
-    let month = String(d.getMonth() + 1).padStart(2, '0');
-    let year = d.getFullYear();
-    let hour = d.getHours();
-    let min = String(d.getMinutes()).padStart(2, '0');
-    let sec = String(d.getSeconds()).padStart(2, '0');
-    let ampm = hour >= 12 ? 'PM' : 'AM';
-    let hour12 = hour % 12;
-    if (hour12 === 0) hour12 = 12;
-    return `${day}/${month}/${year},${hour12}:${min}:${sec} ${ampm}`;
-  }
-
-  function toISODate(str) {
-    if (!str) return "";
-    let d;
-    if (typeof str === "object" && str.seconds) {
-      d = new Date(str.seconds * 1000);
-    } else {
-      d = new Date(str);
-    }
-    if (isNaN(d.getTime())) return "";
-    return d.toISOString().slice(0,10);
-  }
-
-  async function renderOrders() {
-    const filter = document.getElementById('statusFilter').value;
-    const filterDate = document.getElementById('filterDate').value;
-    let orders = await getOrders();
-    if (filter) orders = orders.filter(order => (order.status || "pending") === filter);
-    if (filterDate) {
-      orders = orders.filter(order => {
-        const d = order.date
-          ? (typeof order.date === "object" && order.date.seconds
-              ? new Date(order.date.seconds * 1000)
-              : new Date(order.date))
-          : null;
-        if (!d) return false;
-        const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-        return iso === filterDate;
-      });
-    }
-    let html = '';
-    if (orders.length === 0) {
-      html = `<div class="no-orders">No orders${filter ? ' with status "' + filter + '"' : ''}${filterDate ? ' for selected date' : ''}.</div>`;
-    } else {
-      html = `<div style="overflow-x:auto;"><table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Order ID</th>
-            <th>Customer Name</th>
-            <th>Delivery Address</th>
-            <th>Items (Name / Color / Size)</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>TID</th>
-            <th>Review</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>`;
-      let uidToName = {};
-      let promises = [];
-      orders.forEach(order => {
-        if (order.uid && !uidToName[order.uid]) {
-          promises.push(getCustomerName(order.uid, order.name || order.email || order.username || ''));
-        } else if (!order.uid) {
-          uidToName[order.uid || ''] = order.name || order.email || order.username || '';
+        // Show message
+        function showMessage(message, type) {
+            messageArea.innerHTML = `
+                <div class="message ${type}">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    ${message}
+                </div>
+            `;
+            
+            // Auto-hide success messages after 5 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageArea.innerHTML = '';
+                }, 5000);
+            }
         }
-      });
-      let names = await Promise.all(promises);
-      let i = 0;
-      orders.forEach(order => {
-        if (order.uid && !uidToName[order.uid]) {
-          uidToName[order.uid] = names[i++];
+
+        // Handle image upload
+        function handleImageUpload(file) {
+            if (!file.type.match('image.*')) {
+                showMessage('Please select an image file (JPG, PNG, etc.)', 'error');
+                return;
+            }
+            
+            if (file.size > 1 * 1024 * 1024) {
+                showMessage('Image size should be less than 1MB for demo. Use a URL for larger images.', 'error');
+                return;
+            }
+            
+            selectedImageFile = file;
+            
+            // Create preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreviewUrl = e.target.result;
+                previewImage.src = imagePreviewUrl;
+                imagePreview.classList.add('active');
+                
+                // Clear URL input when file is selected
+                imageUrlInput.value = '';
+            };
+            reader.readAsDataURL(file);
         }
-      });
-      orders.forEach((order) => {
-        let statusClass = 'status-badge status-' + (order.status || 'pending').toLowerCase();
-        let statusLabel = (order.status || "pending").charAt(0).toUpperCase() + (order.status || "pending").slice(1);
-        if(order.status === "closed") statusLabel = 'Closed';
-        let actionBtn = '';
-        if (order.status === "paid") {
-          actionBtn = `<button class="action-btn" onclick="markVerified('${order.id}')">Verify Payment</button>`;
-        } else if (order.status === "verified") {
-          actionBtn = `<button class="action-btn" onclick="markDelivered('${order.id}')">Mark as Delivered</button>`;
-        } else if (order.status === "delivered") {
-          actionBtn = `<button class="action-btn" onclick="markClosed('${order.id}')">Close Order</button>`;
-        } else {
-          actionBtn = `<span style="color:#888;">-</span>`;
+
+        // Reset form
+        function resetForm() {
+            addItemForm.reset();
+            imagePreview.classList.remove('active');
+            selectedImageFile = null;
+            imagePreviewUrl = null;
+            previewImage.src = '';
         }
-        html += `<tr>
-          <td>${formatDisplayDate(order.date)}</td>
-          <td>${order.id}</td>
-          <td>${uidToName[order.uid || ''] || ''}</td>
-          <td>${order.deliveryLocation ? order.deliveryLocation : '<span style="color:#e74c3c;">Not Provided</span>'}</td>
-          <td>
-            <ul class="order-details-list">
-              ${(order.items||[]).map(item =>
-                `<li>
-                  ${escapeHTML(item.name)}
-                  ${item.color ? `<span style="color:#a05;"> / ${escapeHTML(item.color)}</span>` : ''}
-                  ${item.size ? `<span style="color:#357">${escapeHTML(' / ' + item.size)}</span>` : ''}
-                  <span style="color:#888;font-size:0.98em;">(x${item.qty})</span>
-                </li>`
-              ).join('')}
-            </ul>
-          </td>
-          <td style="font-weight:bold;">ZMW ${order.total?.toFixed(2) ?? ''}</td>
-          <td><span class="${statusClass}">${statusLabel}</span></td>
-          <td>
-            ${order.tid 
-              ? `<span style="color:#3574e7;font-weight:600;font-family:monospace;letter-spacing:1px;">${escapeHTML(order.tid)}</span>` 
-              : '<span style="color:#999;">None</span>'}
-          </td>
-          <td>
-            ${order.review ? `<div style="max-width:120px;white-space:pre-wrap;word-break:break-word;color:#3574e7;">${escapeHTML(order.review)}</div>` : '<span style="color:#bbb;">-</span>'}
-          </td>
-          <td style="text-align:center;">
-            ${actionBtn}
-          </td>
-        </tr>`;
-      });
-      html += `</tbody></table></div>`;
-    }
-    document.getElementById('ordersSection').innerHTML = html;
-  }
 
-  function escapeHTML(str){
-    return (str||"").replace(/[&<>"']/g, function(m) {
-      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m];
-    });
-  }
+        // Convert file to Data URL
+        function convertToDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
 
-  window.markVerified = async function(orderId) {
-    await saveOrderStatus(orderId, "verified");
-    renderOrders();
-  };
-  window.markDelivered = async function(orderId) {
-    await saveOrderStatus(orderId, "delivered");
-    renderOrders();
-  };
-  window.markClosed = async function(orderId) {
-    await saveOrderStatus(orderId, "closed");
-    renderOrders();
-  };
-  document.getElementById('statusFilter').onchange = renderOrders;
-  document.getElementById('filterDate').onchange = renderOrders;
-  document.getElementById('clearFilters').onclick = function() {
-    document.getElementById('statusFilter').value = "";
-    document.getElementById('filterDate').value = "";
-    renderOrders();
-  };
+        // Event Listeners
+        addItemForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('itemName').value;
+            const category = document.getElementById('itemCategory').value;
+            const description = document.getElementById('itemDescription').value;
+            const price = document.getElementById('itemPrice').value;
+            const stock = document.getElementById('itemStock').value;
+            const imageUrl = imageUrlInput.value;
+            
+            // Validate required fields
+            if (!name || !category || !description || !price || !stock) {
+                showMessage('Please fill in all required fields.', 'error');
+                return;
+            }
+            
+            let imageSource = '';
+            
+            // Check which image source to use
+            if (imageUrl && imageUrl.startsWith('http')) {
+                // Use direct URL
+                imageSource = imageUrl;
+            } else if (selectedImageFile) {
+                // Convert file to data URL
+                try {
+                    showMessage('Processing image...', 'info');
+                    imageSource = await convertToDataURL(selectedImageFile);
+                } catch (error) {
+                    showMessage('Error processing image. Please try a URL instead.', 'error');
+                    return;
+                }
+            } else {
+                showMessage('Please provide an image URL or upload an image.', 'error');
+                return;
+            }
+            
+            // Add item to Firebase
+            addItem(name, category, description, price, stock, imageSource);
+        });
 
-  // --- INIT ---
-  watchOrdersNotif();
-  watchMessagesNotif();
-  watchUsersNotif();
-  renderOrders();
-  </script>
+        // Image upload events
+        imageUploadArea.addEventListener('click', () => {
+            imageUpload.click();
+        });
+
+        imageUpload.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleImageUpload(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop for images
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.add('dragover');
+        });
+
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.classList.remove('dragover');
+        });
+
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length > 0) {
+                handleImageUpload(e.dataTransfer.files[0]);
+            }
+        });
+
+        // Remove image
+        removeImageBtn.addEventListener('click', () => {
+            selectedImageFile = null;
+            imagePreviewUrl = null;
+            previewImage.src = '';
+            imagePreview.classList.remove('active');
+        });
+
+        // Reset form button
+        resetFormBtn.addEventListener('click', resetForm);
+
+        // When URL input changes, clear file upload
+        imageUrlInput.addEventListener('input', () => {
+            if (imageUrlInput.value) {
+                selectedImageFile = null;
+                imagePreviewUrl = null;
+                previewImage.src = '';
+                imagePreview.classList.remove('active');
+            }
+        });
+
+        // Initialize the app
+        loadItems();
+        
+        // Show info message
+        showMessage('Welcome to MergSignature Admin Panel. For best results, use Unsplash image URLs.', 'info');
+        
+        // Pre-fill some sample URLs for testing
+        setTimeout(() => {
+            if (imageUrlInput && !imageUrlInput.value) {
+                imageUrlInput.placeholder = "Try: https://images.unsplash.com/photo-1594576722512-582d5577dc56";
+            }
+        }, 2000);
+    </script>
 </body>
 </html>
