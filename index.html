@@ -15,7 +15,7 @@
 
         :root {
             --primary-color: #f8f0e9;
-            --secondary-color:orange;
+            --secondary-color: orange;
             --accent-color: #a67c52;
             --dark-color: #333;
             --light-color: #fff;
@@ -46,7 +46,7 @@
 
         .header-content {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
         }
 
@@ -60,24 +60,6 @@
         .site-title span {
             color: orange;
             font-weight: 700;
-        }
-
-        .admin-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background-color: var(--secondary-color);
-            color: var(--light-color);
-            padding: 8px 12px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-            transition: background-color 0.3s;
-        }
-
-        .admin-link:hover {
-            background-color: var(--accent-color);
         }
 
         /* Main Content */
@@ -101,7 +83,7 @@
             padding: 0 10px;
         }
 
-        /* Categories Filter - Left Side Design */
+        /* Categories Filter */
         .categories-section {
             margin: 15px 0 20px;
         }
@@ -188,7 +170,30 @@
             }
         }
 
-        /* Products Grid - Mobile Optimized */
+        /* Promotion Filter */
+        .promotion-filter {
+            margin: 15px 0;
+        }
+
+        .promo-btn {
+            background: var(--secondary-color);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s;
+        }
+
+        .promo-btn:hover {
+            background: var(--accent-color);
+        }
+
+        /* Products Grid */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -235,6 +240,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
         .product-card:hover {
@@ -295,6 +301,28 @@
             padding-top: 5px;
         }
 
+        .old-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 11px;
+            margin-right: 5px;
+        }
+
+        /* Promotion Badge */
+        .promotion-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--secondary-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            z-index: 2;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
         /* Product Modal */
         .modal-overlay {
             position: fixed;
@@ -337,17 +365,91 @@
             }
         }
 
-        .modal-image {
-            height: 220px;
+        /* Image Slider - Updated for full image view */
+        .image-slider {
+            position: relative;
+            height: 350px;
             overflow: hidden;
             border-radius: 15px 15px 0 0;
         }
 
-        .modal-image img {
-            width: 100%;
+        @media (max-width: 768px) {
+            .image-slider {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .image-slider {
+                height: 250px;
+            }
+        }
+
+        .slider-images {
+            display: flex;
+            transition: transform 0.5s ease;
             height: 100%;
-            object-fit: cover;
-            display: block;
+        }
+
+        .slider-image {
+            min-width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: #f5f5f5;
+        }
+
+        .slider-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 15px;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .slider-btn {
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .slider-btn:hover {
+            background: rgba(0,0,0,0.8);
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .slider-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .slider-dot.active {
+            background: var(--secondary-color);
         }
 
         .modal-content {
@@ -440,6 +542,92 @@
 
         .close-modal:hover {
             background: rgba(0, 0, 0, 0.9);
+        }
+
+        /* Full Image View Modal */
+        .full-image-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+        }
+
+        .full-image-overlay.active {
+            display: flex;
+        }
+
+        .full-image-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .full-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .close-full-image {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            color: var(--light-color);
+            font-size: 30px;
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .close-full-image:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+
+        .full-image-nav {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+
+        .full-image-nav-btn {
+            background: rgba(0,0,0,0.5);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .full-image-nav-btn:hover {
+            background: rgba(0,0,0,0.8);
         }
 
         /* Empty State */
@@ -581,10 +769,6 @@
                 font-size: 18px;
             }
             
-            .admin-link {
-                display: none;
-            }
-            
             .page-title h1 {
                 font-size: 20px;
             }
@@ -597,6 +781,22 @@
                 width: 50px;
                 height: 50px;
                 font-size: 24px;
+            }
+            
+            .image-slider {
+                height: 250px;
+            }
+            
+            .slider-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+            
+            .full-image-nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
             }
         }
 
@@ -612,6 +812,21 @@
                 bottom: 15px;
                 right: 10px;
             }
+            
+            .image-slider {
+                height: 220px;
+            }
+            
+            .full-image-nav-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
+            }
+        }
+
+        /* Touch swipe support */
+        .image-slider, .full-image-container {
+            touch-action: pan-y;
         }
 
         /* Success Colors */
@@ -627,10 +842,6 @@
         <div class="container">
             <div class="header-content">
                 <div class="site-title">Merg<span>Signature</span></div>
-                
-                <a href="admin.html" class="admin-link">
-                    <i class="fas fa-user-cog"></i> Admin
-                </a>
             </div>
         </div>
     </header>
@@ -665,6 +876,13 @@
             </div>
         </div>
 
+        <!-- Promotion Filter -->
+        <div class="promotion-filter">
+            <button class="promo-btn" id="promotionFilter">
+                <i class="fas fa-tag"></i> Show Only Promotions
+            </button>
+        </div>
+
         <!-- Products Grid -->
         <div id="products">
             <div class="products-grid" id="productsGrid">
@@ -681,18 +899,47 @@
     <div class="modal-overlay" id="productModal">
         <button class="close-modal" id="closeModal">&times;</button>
         <div class="product-modal">
-            <div class="modal-image">
-                <img id="modalImage" src="" alt="Product Image">
+            <!-- Image Slider -->
+            <div class="image-slider" id="imageSlider">
+                <div class="slider-images" id="sliderImages">
+                    <!-- Images will be added here -->
+                </div>
+                <div class="slider-nav">
+                    <button class="slider-btn" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                    <button class="slider-btn" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div class="slider-dots" id="sliderDots">
+                    <!-- Dots will be added here -->
+                </div>
             </div>
+            
             <div class="modal-content">
                 <div class="modal-category" id="modalCategory">Category</div>
                 <h2 class="modal-title" id="modalTitle">Product Title</h2>
                 <p class="modal-description" id="modalDescription">Product description will appear here...</p>
-                <div class="modal-price" id="modalPrice">ZMW 0</div>
+                <div class="modal-price">
+                    <span id="modalOldPrice" class="old-price" style="display:none;"></span>
+                    <span id="modalPrice">ZMW 0</span>
+                </div>
                 <div class="modal-stock in-stock" id="modalStock">Available</div>
+                <div id="modalPromotion" style="color: var(--secondary-color); margin-bottom: 10px; display: none;">
+                    <i class="fas fa-tag"></i> <span id="promotionText"></span>
+                </div>
                 <a href="#" class="whatsapp-btn" id="whatsappInquiry" target="_blank">
                     <i class="fab fa-whatsapp"></i> Inquire on WhatsApp
                 </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Image View Modal -->
+    <div class="full-image-overlay" id="fullImageView">
+        <button class="close-full-image" id="closeFullImage">&times;</button>
+        <div class="full-image-container" id="fullImageContainer">
+            <img class="full-image" id="fullImage" src="" alt="Full size product image">
+            <div class="full-image-nav">
+                <button class="full-image-nav-btn" id="fullImagePrevBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="full-image-nav-btn" id="fullImageNextBtn"><i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
     </div>
@@ -720,19 +967,19 @@
                     <h3>Contact Info</h3>
                     <p><i class="fas fa-map-marker-alt"></i> Lusaka, Zambia</p>
                     <p><i class="fas fa-phone"></i> +260 777 290 456</p>
-                    <p><i class="fas fa-envelope"></i> info@mergsignature.com</p>
+                    <p><i class="fas fa-envelope"></i> mergsignature@gmail.com</p>
                 </div>
                 
                 <div class="footer-section">
                     <h3>Business Hours</h3>
-                    <p>Mon-Fri: 9am - 6pm</p>
+                    <p>Mon-Fri: 8am - 6pm</p>
                     <p>Saturday: 10am - 4pm</p>
                     <p>Sunday: By Appointment</p>
                 </div>
             </div>
             
             <div class="copyright">
-                <p>&copy; 2023 MergSignature Jewelry. All rights reserved.</p>
+                <p>&copy; 2025 MergSignature Jewelry. All rights reserved.</p>
             </div>
         </div>
     </footer>
@@ -765,25 +1012,218 @@
         const filterToggle = document.getElementById('filterToggle');
         const productModal = document.getElementById('productModal');
         const closeModal = document.getElementById('closeModal');
-        const modalImage = document.getElementById('modalImage');
         const modalCategory = document.getElementById('modalCategory');
         const modalTitle = document.getElementById('modalTitle');
         const modalDescription = document.getElementById('modalDescription');
         const modalPrice = document.getElementById('modalPrice');
+        const modalOldPrice = document.getElementById('modalOldPrice');
         const modalStock = document.getElementById('modalStock');
         const whatsappInquiry = document.getElementById('whatsappInquiry');
+        const promotionFilter = document.getElementById('promotionFilter');
+        const sliderImages = document.getElementById('sliderImages');
+        const sliderDots = document.getElementById('sliderDots');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const modalPromotion = document.getElementById('modalPromotion');
+        const promotionText = document.getElementById('promotionText');
+        const fullImageView = document.getElementById('fullImageView');
+        const fullImage = document.getElementById('fullImage');
+        const closeFullImage = document.getElementById('closeFullImage');
+        const fullImagePrevBtn = document.getElementById('fullImagePrevBtn');
+        const fullImageNextBtn = document.getElementById('fullImageNextBtn');
 
-        // Current category filter
+        // Variables
         let currentCategory = 'all';
         let currentProducts = [];
         let isFilterOpen = false;
+        let showPromotionsOnly = false;
+        let currentSliderIndex = 0;
+        let currentProductImages = [];
+        let currentProductId = null;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // Initialize image slider
+        function initImageSlider(images) {
+            currentProductImages = images || [];
+            currentSliderIndex = 0;
+            sliderImages.innerHTML = '';
+            sliderDots.innerHTML = '';
+            
+            if (currentProductImages.length === 0) {
+                sliderImages.innerHTML = `
+                    <img src="https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop" 
+                         class="slider-image" alt="No image">
+                `;
+                return;
+            }
+            
+            // Add images to slider
+            currentProductImages.forEach((img, index) => {
+                const imgElement = document.createElement('img');
+                imgElement.src = img;
+                imgElement.className = 'slider-image';
+                imgElement.alt = `Product image ${index + 1}`;
+                imgElement.onerror = function() {
+                    this.src = 'https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop';
+                };
+                
+                // Add click event to open full image view
+                imgElement.addEventListener('click', () => {
+                    openFullImageView(index);
+                });
+                
+                sliderImages.appendChild(imgElement);
+                
+                // Add dot
+                const dot = document.createElement('button');
+                dot.className = `slider-dot ${index === 0 ? 'active' : ''}`;
+                dot.addEventListener('click', () => goToSlide(index));
+                sliderDots.appendChild(dot);
+            });
+            
+            updateSlider();
+        }
+
+        // Update slider position
+        function updateSlider() {
+            const slideWidth = 100 / currentProductImages.length;
+            sliderImages.style.transform = `translateX(-${currentSliderIndex * 100}%)`;
+            
+            // Update active dot
+            document.querySelectorAll('.slider-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSliderIndex);
+            });
+        }
+
+        // Go to specific slide
+        function goToSlide(index) {
+            if (index >= 0 && index < currentProductImages.length) {
+                currentSliderIndex = index;
+                updateSlider();
+            }
+        }
+
+        // Next slide
+        function nextSlide() {
+            currentSliderIndex = (currentSliderIndex + 1) % currentProductImages.length;
+            updateSlider();
+        }
+
+        // Previous slide
+        function prevSlide() {
+            currentSliderIndex = (currentSliderIndex - 1 + currentProductImages.length) % currentProductImages.length;
+            updateSlider();
+        }
+
+        // Open full image view
+        function openFullImageView(index) {
+            if (currentProductImages.length === 0) return;
+            
+            currentSliderIndex = index;
+            fullImage.src = currentProductImages[index];
+            fullImage.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop';
+            };
+            fullImageView.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close full image view
+        function closeFullImageView() {
+            fullImageView.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Touch/swipe functionality for slider
+        sliderImages.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        sliderImages.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next image
+                    nextSlide();
+                } else {
+                    // Swipe right - previous image
+                    prevSlide();
+                }
+            }
+        }
+
+        // Touch/swipe functionality for full image view
+        fullImage.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        fullImage.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleFullImageSwipe();
+        });
+        
+        function handleFullImageSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    // Swipe left - next image
+                    nextFullImage();
+                } else {
+                    // Swipe right - previous image
+                    prevFullImage();
+                }
+            }
+        }
+
+        // Next full image
+        function nextFullImage() {
+            currentSliderIndex = (currentSliderIndex + 1) % currentProductImages.length;
+            fullImage.src = currentProductImages[currentSliderIndex];
+            fullImage.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop';
+            };
+        }
+
+        // Previous full image
+        function prevFullImage() {
+            currentSliderIndex = (currentSliderIndex - 1 + currentProductImages.length) % currentProductImages.length;
+            fullImage.src = currentProductImages[currentSliderIndex];
+            fullImage.onerror = function() {
+                this.src = 'https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop';
+            };
+        }
+
+        // Event listeners for slider buttons
+        prevBtn.addEventListener('click', prevSlide);
+        nextBtn.addEventListener('click', nextSlide);
+
+        // Event listeners for full image navigation
+        fullImagePrevBtn.addEventListener('click', prevFullImage);
+        fullImageNextBtn.addEventListener('click', nextFullImage);
+
+        // Close full image view
+        closeFullImage.addEventListener('click', closeFullImageView);
+        fullImageView.addEventListener('click', (e) => {
+            if (e.target === fullImageView) {
+                closeFullImageView();
+            }
+        });
 
         // Toggle filter visibility on mobile
         filterToggle.addEventListener('click', () => {
             isFilterOpen = !isFilterOpen;
             categoryTabs.classList.toggle('active');
             
-            // Update toggle icon
             const icon = filterToggle.querySelector('i');
             if (isFilterOpen) {
                 icon.className = 'fas fa-chevron-up';
@@ -792,21 +1232,20 @@
             }
         });
 
-        // Close filter when clicking outside on mobile
-        document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768 && isFilterOpen) {
-                if (!categoryTabs.contains(e.target) && !filterToggle.contains(e.target)) {
-                    closeFilter();
-                }
+        // Toggle promotion filter
+        promotionFilter.addEventListener('click', () => {
+            showPromotionsOnly = !showPromotionsOnly;
+            
+            if (showPromotionsOnly) {
+                promotionFilter.innerHTML = '<i class="fas fa-times"></i> Show All Products';
+                promotionFilter.style.background = 'var(--accent-color)';
+            } else {
+                promotionFilter.innerHTML = '<i class="fas fa-tag"></i> Show Only Promotions';
+                promotionFilter.style.background = 'var(--secondary-color)';
             }
+            
+            displayProducts(currentProducts);
         });
-
-        function closeFilter() {
-            isFilterOpen = false;
-            categoryTabs.classList.remove('active');
-            const icon = filterToggle.querySelector('i');
-            icon.className = 'fas fa-chevron-down';
-        }
 
         // Load and display items from Firebase
         function loadItems() {
@@ -825,21 +1264,18 @@
                     return;
                 }
                 
-                // Convert snapshot to array
                 snapshot.docs.forEach((doc) => {
                     const item = doc.data();
                     item.id = doc.id;
                     currentProducts.push(item);
                 });
                 
-                // Sort by creation date (newest first)
                 currentProducts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                
                 displayProducts(currentProducts);
             });
         }
 
-        // Display products with filter
+        // Display products with filters
         function displayProducts(products) {
             productsGrid.innerHTML = '';
             
@@ -851,28 +1287,44 @@
                     return;
                 }
                 
+                // Apply promotion filter
+                if (showPromotionsOnly && !item.promotion) {
+                    return;
+                }
+                
                 hasVisibleItems = true;
+                
+                // Get images - support both single image and multiple images
+                const images = item.images || [item.image || ''];
+                const firstImage = images[0] || 'https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop';
                 
                 // Create product card
                 const productCard = document.createElement('div');
                 productCard.className = 'product-card';
                 
-                // Handle image errors
-                const imgErrorHandler = `this.onerror=null; this.src='https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop'`;
+                // Add promotion badge if applicable
+                let promotionBadge = '';
+                if (item.promotion) {
+                    promotionBadge = `<div class="promotion-badge">PROMOTION</div>`;
+                }
                 
                 productCard.innerHTML = `
-                    <img src="${item.image}" alt="${item.name}" class="product-img" onerror="${imgErrorHandler}">
+                    ${promotionBadge}
+                    <img src="${firstImage}" alt="${item.name}" class="product-img" 
+                         onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop'">
                     <div class="product-info">
                         <div class="product-category">${item.category ? item.category.toUpperCase() : 'JEWELRY'}</div>
                         <h3 class="product-title">${item.name}</h3>
-                        <div class="product-price">ZMW ${item.price ? item.price.toLocaleString() : '0'}</div>
+                        <div class="product-price">
+                            ${item.promotion && item.oldPrice ? 
+                                `<span class="old-price">ZMW ${item.oldPrice.toLocaleString()}</span>` : ''}
+                            ZMW ${item.price ? item.price.toLocaleString() : '0'}
+                        </div>
                     </div>
                 `;
                 
-                // Add click event to open modal
                 productCard.addEventListener('click', () => {
                     openProductModal(item);
-                    // Close filter on mobile when product is clicked
                     if (window.innerWidth <= 768) {
                         closeFilter();
                     }
@@ -881,12 +1333,11 @@
                 productsGrid.appendChild(productCard);
             });
             
-            // If no items match filter, show message
             if (!hasVisibleItems) {
                 productsGrid.innerHTML = `
                     <div class="no-products">
                         <i class="fas fa-search"></i>
-                        <h3>No ${currentCategory} found</h3>
+                        <h3>No items found</h3>
                         <p>Try another category or check back soon</p>
                     </div>
                 `;
@@ -895,16 +1346,39 @@
 
         // Open product modal
         function openProductModal(product) {
-            // Set modal content
-            modalImage.src = product.image;
-            modalImage.onerror = function() {
-                this.src = 'https://images.unsplash.com/photo-1590649887895-5d57d10d6c2f?q=80&w=1974&auto=format&fit=crop';
-            };
+            currentProductId = product.id;
             
+            // Get images for slider - support both formats
+            let images = [];
+            if (product.images && Array.isArray(product.images)) {
+                images = product.images;
+            } else if (product.image) {
+                images = [product.image];
+            }
+            initImageSlider(images);
+            
+            // Set modal content
             modalCategory.textContent = product.category ? product.category.toUpperCase() : 'JEWELRY';
             modalTitle.textContent = product.name;
             modalDescription.textContent = product.description;
-            modalPrice.textContent = `ZMW ${product.price ? product.price.toLocaleString() : '0'}`;
+            
+            // Set price with promotion if applicable
+            if (product.promotion && product.oldPrice) {
+                modalOldPrice.textContent = `ZMW ${product.oldPrice.toLocaleString()}`;
+                modalOldPrice.style.display = 'inline';
+                modalPrice.textContent = `ZMW ${product.price.toLocaleString()}`;
+            } else {
+                modalOldPrice.style.display = 'none';
+                modalPrice.textContent = `ZMW ${product.price ? product.price.toLocaleString() : '0'}`;
+            }
+            
+            // Show promotion text if available
+            if (product.promotion) {
+                modalPromotion.style.display = 'block';
+                promotionText.textContent = product.promotion;
+            } else {
+                modalPromotion.style.display = 'none';
+            }
             
             // Set stock status
             if (product.stock > 10) {
@@ -919,7 +1393,7 @@
             }
             
             // Create WhatsApp message
-            const whatsappMessage = `Hello MergSignature! I'm interested in this product:\n\n*${product.name}*\nCategory: ${product.category}\nPrice: ZMW ${product.price}\n\nCan you tell me more about this item?`;
+            const whatsappMessage = `Hello MergSignature! I'm interested in this product:\n\n*${product.name}*\nCategory: ${product.category}\nPrice: ZMW ${product.price}\n${product.promotion ? `Promotion: ${product.promotion}\n` : ''}\nCan you tell me more about this item?`;
             const encodedMessage = encodeURIComponent(whatsappMessage);
             whatsappInquiry.href = `https://wa.me/260777290456?text=${encodedMessage}`;
             
@@ -928,30 +1402,33 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // Close modal
+        // Close modal function
         function closeProductModal() {
             productModal.classList.remove('active');
             document.body.style.overflow = 'auto';
         }
 
+        function closeFilter() {
+            isFilterOpen = false;
+            categoryTabs.classList.remove('active');
+            const icon = filterToggle.querySelector('i');
+            icon.className = 'fas fa-chevron-down';
+        }
+
         // Category tab filtering
         categoryTabs.addEventListener('click', function(e) {
             if (e.target.classList.contains('tab-btn')) {
-                // Update active tab
                 document.querySelectorAll('.tab-btn').forEach(btn => {
                     btn.classList.remove('active');
                 });
                 e.target.classList.add('active');
                 
-                // Update current category
                 currentCategory = e.target.getAttribute('data-category');
                 
-                // Close filter on mobile
                 if (window.innerWidth <= 768) {
                     closeFilter();
                 }
                 
-                // Show loading state
                 productsGrid.innerHTML = `
                     <div class="loading">
                         <div class="loader"></div>
@@ -959,7 +1436,6 @@
                     </div>
                 `;
                 
-                // Filter products with slight delay for better UX
                 setTimeout(() => {
                     displayProducts(currentProducts);
                 }, 200);
@@ -974,14 +1450,27 @@
             }
         });
 
-        // Close modal with Escape key
+        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && productModal.classList.contains('active')) {
-                closeProductModal();
+            if (e.key === 'Escape') {
+                if (productModal.classList.contains('active')) {
+                    closeProductModal();
+                }
+                if (fullImageView.classList.contains('active')) {
+                    closeFullImageView();
+                }
+            }
+            
+            // Navigate full image view with arrow keys
+            if (fullImageView.classList.contains('active')) {
+                if (e.key === 'ArrowLeft') {
+                    prevFullImage();
+                } else if (e.key === 'ArrowRight') {
+                    nextFullImage();
+                }
             }
         });
 
-        // Handle window resize
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768 && isFilterOpen) {
                 closeFilter();
